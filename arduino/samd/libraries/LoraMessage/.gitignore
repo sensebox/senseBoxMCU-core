@@ -1,0 +1,8 @@
+test/main.dSYM
+test/main*
+!test/main.cpp
+node_modules
+*.gch
+npm-debug.log
+/coverage
+/.nyc_output

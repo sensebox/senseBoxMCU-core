@@ -1,8 +1,0 @@
-/.*
-/library.properties
-/example
-/test
-/coverage
-/src/*.*
-!/src/*.js
-/Brewfile

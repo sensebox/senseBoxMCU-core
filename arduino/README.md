@@ -6,7 +6,7 @@ Board Support Package for [Arduino IDE v1.8+](https://www.arduino.cc/en/Main/Sof
 
 Add the following URL to the Arduino Boards Manager (*File->Preferences*):
 ```
-https://github.com/watterott/senseBox-MCU/raw/master/package_sensebox_index.json
+https://github.com/senseBox/senseBoxMCU-core/raw/master/package_sensebox_index.json
 ```
 Then open the Arduino Boards Manager (*Tools->Boards->Boards Manager*) and install the 
 **Arduino SAMD Boards** and **senseBox SAMD Boards**.
@@ -30,7 +30,7 @@ A binary file can be generated and exported in the Arduino IDE with *Sketch->Exp
 Sometimes the driver for the USB Bootloader is not loaded correctly.
 Check the driver state in the Device Manager, when the Bootloader is active (double press reset button).
 If the driver is not loaded correctly then uninstall it via the Device Manager and dis-/reconnect the board and select the driver INF file, if Windows asks for it.
-* [senseBox MCU Driver](https://github.com/watterott/senseBox-MCU/raw/master/arduino/driver.zip) (not needed for Win10)
+* [senseBox MCU Driver](https://github.com/sensebox/senseboxMCU-core/raw/master/arduino/driver.zip) (not needed for Win10)
 
 ### Linux
 The Modem Manager can cause problems, because it detects Serial Ports (e.g. of the USB Bootloader) as a modem.

@@ -118,6 +118,7 @@ class GPS
 		float getLongitude();
 		float getAltitude();
 		float getSpeed();
+		float getHdop();
 	private:
 		TinyGPSPlus* gps;
 		void getGPS();
@@ -125,6 +126,7 @@ class GPS
 		float lng = 0.0;
 		float alt = 0.0;
 		float speed = 0.0;
+		float hdop = 0.0;
 };
 
 /***************************************************************************

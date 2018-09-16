@@ -627,6 +627,12 @@ float GPS::getSpeed()
 	return speed;
 }
 
+float GPS::getHdop()
+{
+	getGPS();
+	return hdop;
+}
+
 void GPS::getGPS()
 {
 	Wire.requestFrom(0x42, 10);
@@ -639,6 +645,7 @@ void GPS::getGPS()
 					lng = gps->location.lng();
 					alt = gps->altitude.meters();
 					speed = gps->speed.kmph();
+					hdop = gps->hdop.hdop();
 				}
 }
 

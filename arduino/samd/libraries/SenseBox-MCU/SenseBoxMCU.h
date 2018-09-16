@@ -24,7 +24,7 @@
 
 #define VEML6070_INTEGRATION_TIME_1 0x01 //IT_1: 5.625 uW/cm2/step
 
-class Bee 
+class Bee
 {
 	public:
 	Bee();
@@ -72,7 +72,7 @@ class HDC1080
 	public:
 		uint8_t begin(void);
 		double getTemperature(void);
-		double getHumidity(void); 
+		double getHumidity(void);
 };
 
 class VEML6070
@@ -86,7 +86,7 @@ class TSL45315
 {
 	public:
 		uint8_t begin(void);
-		unsigned long getIlluminance(void); 
+		unsigned long getIlluminance(void);
 };
 
 class Ultrasonic

@@ -17,7 +17,7 @@ uint8_t Bee::connectToWifi(char* ssid, char* password)
 		Serial.begin(9600); //check if already connected
 		delay(1000);
 	}
-	
+
 	if (WiFi.status() == WL_NO_SHIELD) {
 		Serial.println("WiFi Bee not present.");
 		while (true);
@@ -54,7 +54,7 @@ OpenSenseMap::OpenSenseMap(const char* boxId, Bee* bee)
 }
 
 void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
-{ 
+{
 	if (WiFi.status() != WL_CONNECTED) {
 		WiFi.disconnect();
 		delay(1000); // wait 1s
@@ -67,38 +67,38 @@ void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
 		client->stop();
 		delay(1000);
 	}
-	// prepare data. json must look like: {"value":"12.5"} 
-	char obs[10]; 
+	// prepare data. json must look like: {"value":"12.5"}
+	char obs[10];
 	snprintf(obs, sizeof(obs), "%f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
-	String value = "{\"value\":"; 
-	value += obs; 
-	value += "}"; 
-	Serial.println(value); 
+	String value = "{\"value\":";
+	value += obs;
+	value += "}";
+	Serial.println(value);
 	Serial.println(value.length());
 	Serial.println(senseBoxID);
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port)) 
+	if (client->connect(server, port))
 	{
-		Serial.println("connected"); 
-		// Make a HTTP Post request: 
-		client->print("POST /boxes/"); 
+		Serial.println("connected");
+		// Make a HTTP Post request:
+		client->print("POST /boxes/");
 		client->print(senseBoxID);
-		client->print("/"); 
-		client->print(sensorID); 
-		client->println(" HTTP/1.1"); 
-		client->println("Host: ingress.opensensemap.org"); 
-		client->println("Content-Type: application/json"); 
-		client->println("Connection: close");  
-		client->print("Content-Length: "); 
-		client->println(value.length()); 
-		client->println(); 
-		client->print(value); 
+		client->print("/");
+		client->print(sensorID);
+		client->println(" HTTP/1.1");
+		client->println("Host: ingress.opensensemap.org");
+		client->println("Content-Type: application/json");
+		client->println("Connection: close");
+		client->print("Content-Length: ");
+		client->println(value.length());
+		client->println();
+		client->print(value);
 		client->println();
 	}
-	else 
+	else
 	{
 		Serial.println("Connection failed!");
 		return;
@@ -120,7 +120,7 @@ void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
 }
 
 void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, float lat, float lng)
-{ 
+{
 	if (WiFi.status() != WL_CONNECTED) {
 		WiFi.disconnect();
 		delay(1000); // wait 1s
@@ -133,7 +133,7 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, fl
 		client->stop();
 		delay(1000);
 	}
-	// prepare data. json must look like: {"value":"12.5"} 
+	// prepare data. json must look like: {"value":"12.5"}
 	char obs[10];
 	char clat[10];
 	char clng[10];
@@ -141,39 +141,39 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, fl
 	snprintf(clat, sizeof(obs), "%f", lat);
 	snprintf(clng, sizeof(obs), "%f", lng); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
-	String value = "{\"value\":"; 
+	String value = "{\"value\":";
 	value += obs;
 	value +=  ",";
 	value += "\"location\":[";
 	value += clng;
 	value += ",";
 	value += clat;
-	value += "]}"; 
-	Serial.println(value); 
+	value += "]}";
+	Serial.println(value);
 	Serial.println(value.length());
 	Serial.println(senseBoxID);
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port)) 
+	if (client->connect(server, port))
 	{
-		Serial.println("connected"); 
-		// Make a HTTP Post request: 
-		client->print("POST /boxes/"); 
+		Serial.println("connected");
+		// Make a HTTP Post request:
+		client->print("POST /boxes/");
 		client->print(senseBoxID);
-		client->print("/"); 
-		client->print(sensorID); 
-		client->println(" HTTP/1.1"); 
-		client->println("Host: ingress.opensensemap.org"); 
-		client->println("Content-Type: application/json"); 
-		client->println("Connection: close");  
-		client->print("Content-Length: "); 
-		client->println(value.length()); 
-		client->println(); 
-		client->print(value); 
+		client->print("/");
+		client->print(sensorID);
+		client->println(" HTTP/1.1");
+		client->println("Host: ingress.opensensemap.org");
+		client->println("Content-Type: application/json");
+		client->println("Connection: close");
+		client->print("Content-Length: ");
+		client->println(value.length());
+		client->println();
+		client->print(value);
 		client->println();
 	}
-	else 
+	else
 	{
 		Serial.println("Connection failed!");
 		return;
@@ -257,10 +257,10 @@ uint8_t HDC1080::begin(){
   Wire.begin();
   //Write to configuration register
   Wire.beginTransmission(HDC1080_ADDR); // I2C Adress of HDC1080
-  Wire.write(0x02); // Point to configuration register on 0x02 
+  Wire.write(0x02); // Point to configuration register on 0x02
   Wire.write(0x90); // Configuration 1 0 0 1 0 0 0 0 0x00
-  Wire.write(0x00); // 
-  
+  Wire.write(0x00); //
+
   return Wire.endTransmission();
 }
 
@@ -320,7 +320,7 @@ uint8_t VEML6070::begin(){
 	Wire.begin();
 	Wire.beginTransmission(VEML6070_ADDR);
 	Wire.write((VEML6070_INTEGRATION_TIME_1<<2) | 0x02);
-	
+
 	return Wire.endTransmission();
 }
 

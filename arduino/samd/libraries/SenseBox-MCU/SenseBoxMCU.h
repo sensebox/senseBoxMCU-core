@@ -24,7 +24,7 @@
 
 #define VEML6070_INTEGRATION_TIME_1 0x01 //IT_1: 5.625 uW/cm2/step
 
-class Bee 
+class Bee
 {
 	public:
 	Bee();
@@ -72,7 +72,7 @@ class HDC1080
 	public:
 		uint8_t begin(void);
 		double getTemperature(void);
-		double getHumidity(void); 
+		double getHumidity(void);
 };
 
 class VEML6070
@@ -86,7 +86,7 @@ class TSL45315
 {
 	public:
 		uint8_t begin(void);
-		unsigned long getIlluminance(void); 
+		unsigned long getIlluminance(void);
 };
 
 class Ultrasonic
@@ -118,6 +118,7 @@ class GPS
 		float getLongitude();
 		float getAltitude();
 		float getSpeed();
+		float getHdop();
 	private:
 		TinyGPSPlus* gps;
 		void getGPS();
@@ -125,6 +126,7 @@ class GPS
 		float lng = 0.0;
 		float alt = 0.0;
 		float speed = 0.0;
+		float hdop = 0.0;
 };
 
 /***************************************************************************

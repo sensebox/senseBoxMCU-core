@@ -25,7 +25,8 @@
  */
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x00000000+0x2000+0x10000, LENGTH = 0x00040000-0x2000-0x10000 /* First 8KB used by bootloader, next 64KB used by OTA bootloader */
+  OTA (rx) : ORIGIN = 0x00000000+8K, LENGTH = 64K
+  FLASH (rx) : ORIGIN = 0x00000000+72K, LENGTH = 0x00040000-72K /* First 8KB used by bootloader, next 64KB used by OTA bootloader */
   RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x00008000
 }
 
@@ -63,13 +64,19 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
+	.ota_boot :
+	{
+		. = ALIGN(4);
+		KEEP(*(.ota_boot))
+		FILL(0xff)
+	} > OTA
+
 	.text :
 	{
+		. = ALIGN(72K);
 		__text_start__ = .;
 
 		KEEP(*(.sketch_boot))
-
-		. = ALIGN(0x12000);
 		KEEP(*(.isr_vector))
 		*(.text*)
 

@@ -15,10 +15,15 @@ before_script:
   - mv arduino-$IDE_VERSION $HOME/arduino-ide
   - export PATH=$PATH:$HOME/arduino-ide
   - arduino --install-boards arduino:samd:$ARDUINO_SAMD_VERSION
+  # A little hack to install the local and not released senseBox-MCU core
+  # 1. Install the latest published core version
+  # 2. Remove the installed files
+  # 3. Create the version folder again
+  # 4. Copy the local unpublished core package
   - arduino --pref boardsmanager.additional.urls=$SENSEBOXCORE_URL --install-boards sensebox:samd:$SENSEBOXCORE_VERSION
   - rm -rf /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5
   - mkdir -p /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5
   - cp -a $TRAVIS_BUILD_DIR/arduino/samd/. /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5
-  - ls -LR /home/travis/.arduino15/packages
 script:
+  - npm run test
   - arduino --verbose-build --verify --board sensebox:samd:sb:power=on /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5/libraries/tests/examples/mcu_component_test/mcu_component_test.ino

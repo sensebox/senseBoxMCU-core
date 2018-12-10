@@ -15,6 +15,8 @@ before_script:
   - export PATH=$PATH:$HOME/arduino-ide
   - arduino --install-boards arduino:samd:$ARDUINO_SAMD_VERSION
   # - cp $TRAVIS_BUILD_DIR/
+  - mkdir -p /home/travis/.arduino15/packages/sensebox/hardware
+  - cp -R $TRAVIS_BUILD_DIR/arduino /home/travis/.arduino15/packages/sensebox/hardware
   - ls -LR /home/travis/.arduino15/packages
 script:
   - arduino --verbose-build --verify --board sensebox:samd:sb:power=on /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5/libraries/tests/examples/mcu_component_test/mcu_component_test.ino,

@@ -16,4 +16,4 @@ before_script:
   - arduino --install-boards arduino:samd:$ARDUINO_SAMD_VERSION
   - arduino --pref boardsmanager.additional.urls=$SENSEBOXCORE_URL --install-boards sensebox:samd:$SENSEBOXCORE_VERSION
 script:
-  - arduino --verbose-build --verify --board senseBox:samd:sb /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5/libraries/tests/examples/mcu_component_test/mcu_component_test.ino,
+  - arduino --verbose-build --verify --board sensebox:samd:sb:power=on /home/travis/.arduino15/packages/sensebox/hardware/samd/1.1.5/libraries/tests/examples/mcu_component_test/mcu_component_test.ino,

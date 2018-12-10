@@ -12,7 +12,7 @@
 #include <driver/source/nmasic.h>
 #endif
 #ifdef ENABLE_ETHERNET
-#include <Ethernet2.h>
+#include <Ethernet.h>
 #endif
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
@@ -68,9 +68,9 @@ void setup() {
 }
 void loop() {
     char rx;
-    if (Serial.available() > 0) 
+    if (Serial.available() > 0)
     {
-      
+
       rx = Serial.read();       // get the character
       Serial.println("\n\n");
       // check if a number was received
@@ -79,13 +79,13 @@ void loop() {
         case '1':
           check_uart_sensor();
           Serial.println("\nI2C/Wire:");
-          byte devices, address;  
+          byte devices, address;
           devices = 0;
           for(address = 1; address < 127; address++ )
           {
             Wire.beginTransmission(address);
             byte error = Wire.endTransmission();
-         
+
             if(error == 0)
             {
               devices++;
@@ -102,7 +102,7 @@ void loop() {
               Serial.println(address, HEX);
             }
           }
-        
+
           if(devices == 0) Serial.println("No devices found\n");
           senseBoxIO.statusNone();
           delay(250);
@@ -151,7 +151,7 @@ void printMenu()
   delay(100);
   Serial.println(" 4 - Get security key\n");
   return;
-} 
+}
 void check_uart_sensor(){
   Serial.println("UART/Serial Port:");
   SDS011 sds1(Serial1);
@@ -159,11 +159,11 @@ void check_uart_sensor(){
   float pm10,pm25;
   int sds_error;
   sds_error = sds1.read(&pm25,&pm10);
-  if (!sds_error) 
+  if (!sds_error)
   {
     Serial.println("SDS011 dust particle sensor found at serial port #1.");
   }
-  else 
+  else
   {
     sds_error = sds2.read(&pm25,&pm10);
     if (!sds_error)
@@ -419,7 +419,7 @@ void calc_crc(byte *data, byte len, byte *crc)
 }
 void connectionWiFiTest(){
   #ifdef ENABLE_WIFI
-  if (WiFi.status() == WL_NO_SHIELD) 
+  if (WiFi.status() == WL_NO_SHIELD)
   {
     Serial.println("WiFi bee not present");
     return;
@@ -459,7 +459,7 @@ void connectionWiFiTest(){
   Serial.println();
   Serial.println("Check internet connectivity:");
   Serial.println("============================");
-  
+
   if (WiFi.status() != WL_CONNECTED) {
     Serial.print("Connecting to WiFi...");
     delay(1000); // wait 1s
@@ -467,15 +467,15 @@ void connectionWiFiTest(){
     delay(5000); // wait 5s
   }
   if (WiFi.status() == WL_CONNECTED) Serial.println("connected!");
-  else 
+  else
   {
     Serial.println("failed! Please check SSID and password.");
     return;
   }
-  for (uint8_t timeout = 2; timeout != 0; timeout--) 
+  for (uint8_t timeout = 2; timeout != 0; timeout--)
   {
     Serial.print("Calling openSenseMap server...");
-    if (client.connect(server, 80)) 
+    if (client.connect(server, 80))
     {
       Serial.println("connected!");
       // Make a HTTP request:
@@ -493,7 +493,7 @@ void connectionWiFiTest(){
     Serial.println("Server response:\n");
     while (!client.available())
     {
-      delay(1);  
+      delay(1);
     }
     // read server response
     while (client.available())
@@ -531,10 +531,10 @@ void connectionEthernetTest() {
     }
     Serial.println();
   }
-  for (uint8_t timeout = 2; timeout != 0; timeout--) 
+  for (uint8_t timeout = 2; timeout != 0; timeout--)
   {
     Serial.print("Calling openSenseMap server...");
-    if (ethernetClient.connect(server, 80)) 
+    if (ethernetClient.connect(server, 80))
     {
       Serial.println("connected!");
       // Make a HTTP request:
@@ -552,7 +552,7 @@ void connectionEthernetTest() {
     Serial.println("Server response:\n");
     while (!ethernetClient.available())
     {
-      delay(1);  
+      delay(1);
     }
     // read server response
     while (ethernetClient.available())

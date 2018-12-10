@@ -1,0 +1,25 @@
+sudo: false
+language: node_js
+node_js:
+- '6'
+env:
+  global:
+    - IDE_VERSION=1.8.5
+    - SENSEBOXCORE_VERSION=1.1.5
+    - ARDUINO_SAMD_VERSION=1.6.18
+    - SENSEBOXCORE_URL=https://raw.githubusercontent.com/sensebox/senseBoxMCU-core/master/package_sensebox_index.json
+    - SENSEBOX_LIBRARIES_URL=https://github.com/sensebox/resources/raw/master/libraries/senseBox_Libraries.zip
+    - SENSEBOX_LIBRARY_URL=https://github.com/sensebox/senseBox_library/archive/master.zip
+before_script:
+  - wget http://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$IDE_VERSION-linux64.tar.xz
+  - mv arduino-$IDE_VERSION $HOME/arduino-ide
+  - export PATH=$PATH:$HOME/arduino-ide
+  - wget -O senseBox_Libraries.zip $SENSEBOX_LIBRARIES_URL
+  - wget -O senseBox_Library.zip $SENSEBOX_LIBRARY_URL
+  - unzip senseBox_Libraries.zip -d $HOME/arduino-ide
+  - unzip senseBox_Library.zip -d $HOME/arduino-ide/libraries
+  - arduino --install-boards arduino:samd:$ARDUINO_SAMD_VERSION
+  - arduino --pref boardsmanager.additional.urls=$SENSEBOXCORE_URL --install-boards sensebox:samd:$SENSEBOXCORE_VERSION
+  - ls -la $HOME
+  - ls -LR $HOME/arduino-ide

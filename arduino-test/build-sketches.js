@@ -59,7 +59,7 @@ const buildMatrix = {
 };
 
 for (const model of Object.keys(sketchTemplater._templates)) {
-  if (model.includes('V2')) {
+  if (model.includes('V2Wifi')) {
     buildMatrix['sensebox:samd:sb'].push(model);
   }
 }

@@ -12,6 +12,9 @@
 #define RESET_TIMEOUT 3000 // milliseconds within which a second reset has to occur to stay in OTA mode. this counts additionally to the bootloader timeout of 500ms
 #define FLASH_SIZE 0x40000UL
 
+#include "senseBoxOTA.h"
+SenseBoxOTA ota_module;
+
 bool validateFlashedApp() {
   /**
    * Test reset vector of application @APP_START_ADDRESS+4
@@ -68,23 +71,12 @@ void jumpToApp() {
   asm("bx %0" ::"r"(app_reset_ptr));
 }
 
-void setupOTA() {
-  // TODO: check for wifi shield
-
-  // TODO: initialize wifi
-  // set SSID based on last 4 bytes of MAC address
-
-  // TODO: start webserver
-
-  // TODO: turn on status LED
-}
-
 void setup() {
   #ifdef DEBUG
   LOG.begin(115200);
   while(!LOG) {;} // dont continue until serial was opened
   #endif
-  
+
   LOG.println(*RESET_MAGIC_ADDRESS);
 
 
@@ -93,11 +85,12 @@ void setup() {
       jumpToApp();
     }
   }
-
-  setupOTA();
+  ota_module.begin();
+  
 }
 
 void loop() {
+  ota_module.update();
   LOG.println("double tapped!");
   LOG.println(*RESET_MAGIC_ADDRESS);
   delay(100);

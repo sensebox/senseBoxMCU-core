@@ -15,6 +15,8 @@
 #include "senseBoxOTA.h"
 SenseBoxOTA ota_module;
 
+
+
 bool validateFlashedApp() {
   /**
    * Test reset vector of application @APP_START_ADDRESS+4
@@ -72,6 +74,7 @@ void jumpToApp() {
 }
 
 void setup() {
+  pinMode(0,INPUT);
   #ifdef DEBUG
   LOG.begin(115200);
   while(!LOG) {;} // dont continue until serial was opened
@@ -81,19 +84,24 @@ void setup() {
 
 
   if (validateFlashedApp()) {
-    if (!checkDoubleTapReset()) {
+    // digitalRead(0) gives the value for the switch button 
+    // 0 indicates the button is pressed 
+    // 1 indicitaes the button is not pressed
+    if (!digitalRead(0))
+    {
       jumpToApp();
     }
   }
+  // Setup  WiFi access point 
   ota_module.begin();
   
 }
 
 void loop() {
+  // Function which listens for changes in the client 
   ota_module.update();
   LOG.println("double tapped!");
   LOG.println(*RESET_MAGIC_ADDRESS);
   delay(100);
   
-  // TODO: poll webserver
 }

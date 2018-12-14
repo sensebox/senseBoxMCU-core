@@ -1,10 +1,7 @@
-#define LOG SerialUSB
-
 void setup() {
-  LOG.begin(115200);
-  while(!LOG) {;}
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop() {
-  LOG.println("woop woop i am the app");
 }

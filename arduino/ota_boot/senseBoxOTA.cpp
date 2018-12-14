@@ -2,23 +2,16 @@
 #include <Arduino.h>
 #include "senseBoxOTA.h"
 
-
-// SenseBoxOTA::SenseBoxOTA() :
-//     server(80);
-//     mac[6];
-//     status(WL_IDLE_STATUS);
-//     {
-//     }
-
 SenseBoxOTA::SenseBoxOTA():
       server(80),
       status(WL_IDLE_STATUS)
     {
       
     }
+
 void SenseBoxOTA::begin()
 { 
-    // TODO: check for wifi shield
+  // TODO: check for wifi shield
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");
     // don't continue
@@ -40,14 +33,14 @@ void SenseBoxOTA::begin()
     // don't continue
     while (true);
     }
+  
+  pinMode(LED_BUILTIN, OUTPUT);
 
   // wait 10 seconds for connection:
   delay(10000);
 
   // start the web server on port 80
   server.begin();
-
-
 }
 
 void SenseBoxOTA::sendPage(WiFiClient client)
@@ -106,8 +99,8 @@ void SenseBoxOTA::printWiFiStatus()
   Serial.println(ip);
 }
 
-void SenseBoxOTA::update(){
-   // Web Server listens to changes 
+void SenseBoxOTA::update() {
+  // Web Server listens to changes 
   if (status != WiFi.status()) {
       // it has changed update the variable
       status = WiFi.status();

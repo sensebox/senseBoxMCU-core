@@ -1,18 +1,12 @@
 
 # custom menu
 menu.power=Power
-menu.ota=OTA Programming
 
 # senseBox MCU (SAMD21)
 sb.name=senseBox MCU
 sb.menu.power.on=ON as Default
 sb.menu.power.off=OFF as Default
 sb.menu.power.off.build.extra_flags=-D__SAMD21G18A__ -DSB_DEFAULT_POWER_OFF {build.usb_flags}
-sb.menu.ota.on=Default programming
-sb.menu.ota.off=Program with OTA support
-sb.menu.ota.off.build.ldscript=linker_scripts/gcc/flash_with_ota.ld
-sb.menu.ota.off.upload.maximum_size=188416
-sb.menu.ota.off.bootloader.size=0x12000
 sb.vid.0=0x04D8
 sb.pid.0=0xEF66
 sb.vid.1=0x04D8

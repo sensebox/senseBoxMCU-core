@@ -17,7 +17,6 @@
 */
 
 #include "variant.h"
-#include "ota-bootloader.h"
 
 const PinDescription g_APinDescription[] = {
 

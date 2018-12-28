@@ -12,3 +12,4 @@ senseBox MCU is a Microchip SAMD21 based open-source board for sensors.
 * MicroUSB connector for power and data
 * Idle power consumption about 20mA (single 5V power supply)
 * **[Documentation on learn.watterott.com](http://learn.watterott.com/sensebox/)**
+* This repository is based on [Watterott's Core Package](https://github.com/watterott/senseBox-MCU)

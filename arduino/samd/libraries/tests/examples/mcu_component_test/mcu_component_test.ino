@@ -1,9 +1,9 @@
-// senseBox:home WiFi is enabled by default!!!
+// senseBox:home WiFi is enabled by default!
 // If you have a senseBox:home Ethernet comment out line 5
 // and comment in line 4
-// Do not comment in both at the same time!!!
-#define ENABLE_ETHERNET
-//#define ENABLE_WIFI
+// Do not comment in both at the same time!
+//#define ENABLE_ETHERNET
+#define ENABLE_WIFI
 
 #include <Wire.h>
 #include <SPI.h>

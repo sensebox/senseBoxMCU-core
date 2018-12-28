@@ -55,6 +55,7 @@ WiFiSocketClass::WiFiSocketClass()
 		_info[i].buffer.data = NULL;
 		_info[i].buffer.head = NULL;
 		_info[i].buffer.length = 0;
+		memset(&_info[i]._lastSendtoAddr, 0x00, sizeof(_info[i]._lastSendtoAddr));
 	}
 }
 
@@ -66,7 +67,7 @@ SOCKET WiFiSocketClass::create(uint16 u16Domain, uint8 u8Type, uint8 u8Flags)
 {
 	SOCKET sock = socket(u16Domain, u8Type, u8Flags);
 
-	if (sock > 0) {
+	if (sock >= 0) {
 		_info[sock].state = SOCKET_STATE_IDLE;
 		_info[sock].parent = -1;
 	}
@@ -319,10 +320,16 @@ sint16 WiFiSocketClass::sendto(SOCKET sock, void *pvSendBuffer, uint16 u16SendLe
 	m2m_wifi_handle_events(NULL);
 
 	if (_info[sock].state != SOCKET_STATE_BOUND) {
-		return 0;
+		return -1;
 	}
 
-	return ::sendto(sock, pvSendBuffer, u16SendLength, flags, pstrDestAddr, u8AddrLen);
+	if (memcmp(&_info[sock]._lastSendtoAddr, pstrDestAddr, sizeof(_info[sock]._lastSendtoAddr)) != 0) {
+		memcpy(&_info[sock]._lastSendtoAddr, pstrDestAddr, sizeof(_info[sock]._lastSendtoAddr));
+
+		return ::sendto(sock, pvSendBuffer, u16SendLength, flags, pstrDestAddr, u8AddrLen);
+	} else {
+		return ::send(sock, pvSendBuffer, u16SendLength, 0);
+	}	
 }
 
 sint8 WiFiSocketClass::close(SOCKET sock)
@@ -348,6 +355,7 @@ sint8 WiFiSocketClass::close(SOCKET sock)
 	_info[sock].buffer.head = NULL;
 	_info[sock].buffer.length = 0;
 	_info[sock].recvMsg.s16BufferSize = 0;
+	memset(&_info[sock]._lastSendtoAddr, 0x00, sizeof(_info[sock]._lastSendtoAddr));
 
 	return ::close(sock);
 }

@@ -39,3 +39,21 @@ So we recommend to uninstall/remove the Modem Manager:
 sudo apt-get uninstall modemmanager
 ```
 As alternative it is also possible to add a backlist rule for the USB device to the file ```77-mm-usb-device-blacklist.rules```.
+
+
+## Development
+To install the development version in the Arduino IDE, create a symlink into the
+arduino configuration directory:
+
+```sh
+rm -rf ~/.arduino15/packages/sensebox/hardware/samd/0.0.0
+ln -s $PWD/samd ~/.arduino15/packages/sensebox/hardware/samd/0.0.0
+```
+
+For a new release:
+
+1. update the `samd.zip` archive
+2. add an entry in `../package_sensebox_index.json`
+  - get the archive size via `wc -c < samd.zip`
+  - make sure to not link to `master` branch, but the commit hash!
+

@@ -21,7 +21,7 @@ class OTA {
         void sendResponse(WiFiClient client);
         void pollWebserver();
         void pollWifiState();
-        void handlePostSketch(WiFiClient& client, String& req_str);
+        bool handlePostSketch(WiFiClient& client, String& req_str);
 
         byte mac[6];
         int status;
@@ -29,6 +29,6 @@ class OTA {
 
         // LED state handling
         unsigned long previousMillis = 0;
-        int led_interval = 900;
+        int led_interval = 1500;
         int ledState = HIGH;
 };

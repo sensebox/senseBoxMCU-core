@@ -16,7 +16,7 @@ void OTA::begin()
 
   // Assign mac address to byte array & push it to a char array
   WiFi.macAddress(mac);
-  String mac_str = String(mac[1], HEX) + String(mac[2], HEX);
+  String mac_str = String(mac[1], HEX) + String(mac[0], HEX);
   mac_str.toUpperCase();
   String ssid_string = String("senseBox:" + mac_str);
   char ssid[20];
@@ -47,11 +47,11 @@ void OTA::pollWifiState() {
 
     if (status == WL_AP_CONNECTED) {
       LOG.println("device connected to AP");
-      led_interval = 300;
+      led_interval = 900;
     } else {
       // a device has disconnected from the AP, and we are back in listening mode
       LOG.println("Device disconnected from AP");
-      led_interval = 900;
+      led_interval = 1500;
     }
   }
 
@@ -70,6 +70,7 @@ void OTA::pollWifiState() {
 void OTA::pollWebserver() {
   WiFiClient client = server.available(); // listen for incoming clients
   if (!client) return;
+  bool flashSuccess = false;
 
   LOG.println("new connection");
 
@@ -86,15 +87,14 @@ void OTA::pollWebserver() {
     // character) and the line is blank, the http request has ended,
     // so you can send a reply
     if (c == '\n' && currentLineIsBlank && req_str.startsWith("GET")) {
-      sendResponse(client);
       break;
     }
 
     if (c == '\n' && currentLineIsBlank && req_str.startsWith("POST")) {
+      bool success;
       if (req_str.startsWith("POST /sketch "))
-        handlePostSketch(client, req_str);
+        flashSuccess = handlePostSketch(client, req_str);
 
-      sendResponse(client);
       break;
     }
 
@@ -104,50 +104,97 @@ void OTA::pollWebserver() {
       currentLineIsBlank = false;
   }
 
+  sendResponse(client);
   client.stop();
   LOG.println("client disconnected");
+
+  if (flashSuccess)
+    jumpToApp();
+
 }
 
-void OTA::handlePostSketch(WiFiClient& client, String& req_str) {
+bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   // extract length of body
-  String tmp = req_str.substring(req_str.indexOf("Content-Length:") + 15);
+  int contentLengthPos = req_str.indexOf("Content-Length:");
+  if (contentLengthPos <= 0) {
+    LOG.println("Conten-tLength is missing, ignoring request");
+    return false;
+  }
+  String tmp = req_str.substring(contentLengthPos + 15);
   tmp.trim();
   uint32_t contentLength = tmp.toInt();
+  LOG.println(contentLength);
 
   // skip the first part of the sketch which contains the OTA code we're currently running from
   uint32_t updateSize = contentLength - OTA_SIZE;
 
   if (contentLength <= OTA_SIZE) {
     LOG.println("update is too small, ignoring");
-    return;
+    return false;
   }
 
-  while (updateSize < contentLength--) {
-    char c = client.read();
-    req_str += c;
-  }
+  while (updateSize < contentLength--)
+    req_str += (char) client.read();
+  
+//  while (updateSize < contentLength) {
+//    if (!client.available()) continue;
+//    contentLength--;
+//    char c = client.read();
+//    req_str += c;
+//  }
 
   // write the body to flash, page by page
   FlashClass flash;
   uint8_t flashbuffer[FLASH_PAGE_SIZE];
-  uint32_t flashbufferindex = 0;
   uint32_t flashAddress = APP_START_ADDRESS;
 
-  flash.erase((void*)flashAddress, updateSize);
+  uint32_t numPages = ceil((float)updateSize / (float)FLASH_PAGE_SIZE);
+  uint32_t lastPageBytes = updateSize % FLASH_PAGE_SIZE == 0
+    ? FLASH_PAGE_SIZE
+    : updateSize % FLASH_PAGE_SIZE;
 
-  for (uint32_t i = 0; i < updateSize; i += FLASH_PAGE_SIZE) {
+  //flash.erase((void*)flashAddress, updateSize);
+
+  for (uint32_t i = 0; i < numPages; i++) {
+    while (i != numPages - 1 && client.available() < FLASH_PAGE_SIZE) {;}
+   
+    LOG.println(client.available());
+    
     client.read(flashbuffer, sizeof(flashbuffer));
+    
+    LOG.print("writing received data buffer to flash at 0x");
+    LOG.println(String(flashAddress, HEX));
+    //LOG.write(flashbuffer, FLASH_PAGE_SIZE);
 
-    LOG.print("writing received data buffer to flash at ");
-    LOG.println(flashAddress);
-    LOG.println((char*)flashbuffer);
-
-    flash.write((void*)flashAddress, flashbuffer, FLASH_PAGE_SIZE);
+    flash.write((void*)flashAddress, flashbuffer, sizeof(flashbuffer));
 
     flashAddress += sizeof(flashbuffer);
   }
 
-  jumpToApp();
+  LOG.print("FLASH at 0x12000: 0x");
+  LOG.println(String(*(uint32_t*)0x12000, HEX));
+  LOG.print("FLASH at 0x12004: 0x");
+  LOG.println(String(*(uint32_t*)0x12004, HEX));
+  LOG.print("FLASH at 0x12008: 0x");
+  LOG.println(String(*(uint32_t*)0x12008, HEX));
+  LOG.print("FLASH at 0x1200c: 0x");
+  LOG.println(String(*(uint32_t*)0x1200c, HEX));
+  LOG.print("FLASH at 0x12010: 0x");
+  LOG.println(String(*(uint32_t*)0x12010, HEX));
+  LOG.print("FLASH at 0x12014: 0x");
+  LOG.println(String(*(uint32_t*)0x12014, HEX));
+  LOG.print("FLASH at 0x12018: 0x");
+  LOG.println(String(*(uint32_t*)0x12018, HEX));
+  LOG.print("FLASH at 0x1201c: 0x");
+  LOG.println(String(*(uint32_t*)0x1201c, HEX));
+  LOG.print("FLASH at 0x12020: 0x");
+  LOG.println(String(*(uint32_t*)0x12020, HEX));
+
+  // PROBLEM: app_reset_ptr detected as "f" when jumping.
+  // stack pointer set correctly though!
+  // -> looks like a byte offset issue (uint32_t <> uint8_t), would explain the sizeof() in SDU lib
+
+  return true;
 }
 
 void OTA::jumpToApp() {
@@ -173,6 +220,7 @@ void OTA::jumpToApp() {
   asm("bx %0" ::"r"(app_reset_ptr));
 }
 
+// TODO: code & message as params
 void OTA::sendResponse(WiFiClient client) {
   // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
   // and a content-type so the client knows what's coming, then a blank line:

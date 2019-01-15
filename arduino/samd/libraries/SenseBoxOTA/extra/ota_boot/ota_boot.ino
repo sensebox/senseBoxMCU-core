@@ -17,6 +17,7 @@ bool validateFlashedApp() {
 }
 
 void setup() {
+  // Switch Button 
   pinMode(0, INPUT_PULLUP);
 
   #ifdef OTA_DEBUG

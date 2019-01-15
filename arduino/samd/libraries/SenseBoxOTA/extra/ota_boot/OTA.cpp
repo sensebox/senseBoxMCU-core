@@ -38,7 +38,6 @@ void OTA::begin()
   server.begin();
 }
 
-// TODO: update LED blink
 void OTA::pollWifiState() {
   // Web Server listens to changes
   if (status != WiFi.status()) {
@@ -54,7 +53,7 @@ void OTA::pollWifiState() {
       led_interval = 1500;
     }
   }
-
+  // led blink logik 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= led_interval) {
     if (ledState == HIGH)
@@ -89,10 +88,11 @@ void OTA::pollWebserver() {
     if (c == '\n' && currentLineIsBlank && req_str.startsWith("GET")) {
       break;
     }
-
+    // POST Request handles self update
     if (c == '\n' && currentLineIsBlank && req_str.startsWith("POST")) {
       bool success;
       if (req_str.startsWith("POST /sketch "))
+        // handle POST in other function 
         flashSuccess = handlePostSketch(client, req_str);
 
       break;
@@ -107,41 +107,46 @@ void OTA::pollWebserver() {
   sendResponse(client);
   client.stop();
   LOG.println("client disconnected");
-
-  if (flashSuccess)
-    jumpToApp();
-
+  
+  if (flashSuccess){
+    // Reset system to load the flashed sketch 
+    stopHardware();
+    NVIC_SystemReset();
+  }
 }
 
 bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   // extract length of body
   int contentLengthPos = req_str.indexOf("Content-Length:");
   if (contentLengthPos <= 0) {
-    LOG.println("Conten-tLength is missing, ignoring request");
+    LOG.println("Content-Length is missing, ignoring request");
     return false;
   }
+  // extract the actual size 
   String tmp = req_str.substring(contentLengthPos + 15);
   tmp.trim();
+  // cast to int 
   uint32_t contentLength = tmp.toInt();
   LOG.println(contentLength);
 
   // skip the first part of the sketch which contains the OTA code we're currently running from
   uint32_t updateSize = contentLength - OTA_SIZE;
-
+  
   if (contentLength <= OTA_SIZE) {
     LOG.println("update is too small, ignoring");
     return false;
   }
 
-  while (updateSize < contentLength--)
+/*  while (updateSize < contentLength--)
     req_str += (char) client.read();
-  
-//  while (updateSize < contentLength) {
-//    if (!client.available()) continue;
-//    contentLength--;
-//    char c = client.read();
-//    req_str += c;
-//  }
+  */
+  // skip ota section 
+  while (updateSize < contentLength) {
+    if (!client.available()) continue;
+    contentLength--;
+    char c = client.read();
+    req_str += c;
+  }
 
   // write the body to flash, page by page
   FlashClass flash;
@@ -153,14 +158,25 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
     ? FLASH_PAGE_SIZE
     : updateSize % FLASH_PAGE_SIZE;
 
-  //flash.erase((void*)flashAddress, updateSize);
+  flash.erase((void*)flashAddress, updateSize);
 
   for (uint32_t i = 0; i < numPages; i++) {
-    while (i != numPages - 1 && client.available() < FLASH_PAGE_SIZE) {;}
-   
+    // do nothing until one buffer size of bytes is available 
+    // while (i != numPages - 1 && client.available() < FLASH_PAGE_SIZE) {;}
+   uint32_t bufferIndex = 0;
+   uint32_t bytesToRead = i == numPages-1 
+    ? lastPageBytes
+    : FLASH_PAGE_SIZE;
+    
+   while(bufferIndex < bytesToRead){
+    while(!client.available()){;}
+    flashbuffer[bufferIndex]=client.read();
+    bufferIndex++;
+   }
+    
     LOG.println(client.available());
     
-    client.read(flashbuffer, sizeof(flashbuffer));
+    // client.read(flashbuffer, sizeof(flashbuffer));
     
     LOG.print("writing received data buffer to flash at 0x");
     LOG.println(String(flashAddress, HEX));
@@ -189,7 +205,8 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   LOG.println(String(*(uint32_t*)0x1201c, HEX));
   LOG.print("FLASH at 0x12020: 0x");
   LOG.println(String(*(uint32_t*)0x12020, HEX));
-
+  LOG.print("FLASH at 0x139c1: 0x");
+  LOG.println(String(*(uint32_t*)0x139c0, HEX));
   // PROBLEM: app_reset_ptr detected as "f" when jumping.
   // stack pointer set correctly though!
   // -> looks like a byte offset issue (uint32_t <> uint8_t), would explain the sizeof() in SDU lib
@@ -218,6 +235,8 @@ void OTA::jumpToApp() {
 
   /* Jump to application Reset Handler in the application */
   asm("bx %0" ::"r"(app_reset_ptr));
+
+  
 }
 
 // TODO: code & message as params
@@ -235,4 +254,13 @@ void OTA::sendResponse(WiFiClient client) {
 void OTA::update() {
   pollWifiState();
   pollWebserver();
+}
+// end all configurations that have been made for the OTA module 
+// gets called when succesfully flashed
+void OTA::stopHardware(){
+  LOG.end();
+  WiFi.end();
+  digitalWrite(LED_BUILTIN,LOW);
+  
+  
 }

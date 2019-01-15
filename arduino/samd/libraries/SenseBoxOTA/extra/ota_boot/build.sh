@@ -1,10 +1,12 @@
 #!/bin/sh -x
+set -e
 
 ARDUINO=arduino
+DIR=$(dirname "$0")
 SKETCH_NAME="ota_boot.ino"
-SKETCH="$PWD/$SKETCH_NAME"
-BUILD_PATH="$PWD/build"
-OUTPUT_PATH="../../src/boot"
+SKETCH="$DIR/SKETCH_NAME"
+BUILD_PATH="$DIR/build"
+OUTPUT_PATH="$DIR/../../src/boot"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	ARDUINO="/Applications/Arduino.app/Contents/MacOS/Arduino"
@@ -19,5 +21,6 @@ buildSDUBootSketch() {
 	rm -rf "$BUILD_PATH"
 }
 
+#cd $DIR
 mkdir -p "$OUTPUT_PATH"
 buildSDUBootSketch "sensebox:samd:sb:power=on" "$OUTPUT_PATH/sensebox_mcu.h"

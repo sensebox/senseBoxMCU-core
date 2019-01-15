@@ -1,5 +1,6 @@
 #pragma once
 
+// uncomment this for OTA debug statements. note: nothing will execute until serial monitor is opened!
 //#define OTA_DEBUG
 #define LOG SerialUSB
 

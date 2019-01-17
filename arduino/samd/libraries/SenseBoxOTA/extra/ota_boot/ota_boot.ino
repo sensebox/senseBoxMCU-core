@@ -1,4 +1,3 @@
-#include "conf.h"
 #include "OTA.h"
 
 OTA ota_module;

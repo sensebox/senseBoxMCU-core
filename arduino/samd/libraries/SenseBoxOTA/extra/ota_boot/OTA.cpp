@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <FlashStorage.h>
 
-#include "conf.h"
 #include "OTA.h"
 
 OTA::OTA(): server(80), status(WL_IDLE_STATUS) {}

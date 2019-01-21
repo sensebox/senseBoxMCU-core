@@ -21,6 +21,5 @@ buildSDUBootSketch() {
 	rm -rf "$BUILD_PATH"
 }
 
-#cd $DIR
 mkdir -p "$OUTPUT_PATH"
 buildSDUBootSketch "sensebox:samd:sb:power=on" "$OUTPUT_PATH/sensebox_mcu.h"

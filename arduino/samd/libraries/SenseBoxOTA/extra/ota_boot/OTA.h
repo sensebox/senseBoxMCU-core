@@ -1,3 +1,5 @@
+#pragma once
+
 // Libs needed for WiFi
 #if (ARDUINO >= 100)
     #include "Arduino.h"

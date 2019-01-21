@@ -1,8 +1,8 @@
+#include "OTA.h"
+
 #include <SPI.h>
 #include <Arduino.h>
 #include <FlashStorage.h>
-
-#include "OTA.h"
 
 OTA::OTA(): server(80), status(WL_IDLE_STATUS) {}
 
@@ -81,7 +81,7 @@ void OTA::pollWebserver() {
 
   LOG.println("new connection");
 
-  bool flashSuccess = true;
+  bool flashSuccess = false;
   bool currentLineIsBlank = true;
   String req_str = "";
 
@@ -111,7 +111,7 @@ void OTA::pollWebserver() {
       currentLineIsBlank = false;
   }
 
-  sendResponse(client, flashSuccess);
+  sendResponse(client, req_str.startsWith("GET") || flashSuccess);
   client.stop();
   LOG.println("client disconnected");
 
@@ -141,6 +141,10 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
 
   if (contentLength <= OTA_SIZE) {
     LOG.println("update is too small, ignoring");
+    return false;
+  }
+  if (contentLength > (FLASH_SIZE - 0x2000)) {
+    LOG.println("update is too large, ignoring");
     return false;
   }
 
@@ -184,6 +188,15 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
     flashAddress += sizeof(flashbuffer);
   }
 
+  LOG.print("FLASH at 0x12000: 0x");
+  LOG.println(String(*(uint32_t*)0x12000, HEX));
+  LOG.print("FLASH at 0x12004: 0x");
+  LOG.println(String(*(uint32_t*)0x12004, HEX));
+  LOG.print("FLASH at 0x12008: 0x");
+  LOG.println(String(*(uint32_t*)0x12008, HEX));
+  LOG.print("FLASH at 0x1200c: 0x");
+  LOG.println(String(*(uint32_t*)0x1200c, HEX));
+
   return true;
 }
 
@@ -197,7 +210,7 @@ void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
   client.println("Access-Control-Allow-Origin: *");
   client.println("Connection: close");
   client.println();
-  // The HTTP response ends with another blank line:
+  client.println("you done mate?"); // some content is required for some clients to recognize the response
   client.println();
 }
 

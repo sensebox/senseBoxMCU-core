@@ -112,6 +112,7 @@ void OTA::pollWebserver() {
   }
 
   sendResponse(client, req_str.startsWith("GET") || flashSuccess);
+  delay(500);
   client.stop();
   LOG.println("client disconnected");
 
@@ -207,6 +208,8 @@ void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
     client.println("HTTP/1.1 200 OK");
   else
     client.println("HTTP/1.1 400 Bad Request");
+  client.println("Content-type:text/html");
+  client.println("Content-Length: 0");
   client.println("Access-Control-Allow-Origin: *");
   client.println("Connection: close");
   client.println();

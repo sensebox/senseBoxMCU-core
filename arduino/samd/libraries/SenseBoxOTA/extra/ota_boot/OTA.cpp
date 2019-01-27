@@ -24,7 +24,6 @@ void OTA::createAccessPoint() {
     Serial.println("WiFi shield not present");
     while (true);
   }
-
   // Assign mac address to byte array & push it to a char array
   WiFi.macAddress(mac);
   String mac_str = String(mac[1], HEX) + String(mac[0], HEX);
@@ -43,7 +42,8 @@ void OTA::createAccessPoint() {
     while (true);
   }
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN2, OUTPUT);
+
 }
 
 void OTA::pollWifiState() {
@@ -69,7 +69,7 @@ void OTA::pollWifiState() {
     else
       ledState = HIGH;
 
-    digitalWrite(LED_BUILTIN, ledState);
+    digitalWrite(LED_BUILTIN2, ledState);
     previousMillis = currentMillis;
   }
 }
@@ -112,7 +112,6 @@ void OTA::pollWebserver() {
   }
 
   sendResponse(client, req_str.startsWith("GET") || flashSuccess);
-  delay(500);
   client.stop();
   LOG.println("client disconnected");
 
@@ -213,7 +212,6 @@ void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
   client.println("Access-Control-Allow-Origin: *");
   client.println("Connection: close");
   client.println();
-  client.println("you done mate?"); // some content is required for some clients to recognize the response
   client.println();
 }
 
@@ -222,5 +220,5 @@ void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
 void OTA::stopHardware(){
   LOG.end();
   WiFi.end();
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN2, LOW);
 }

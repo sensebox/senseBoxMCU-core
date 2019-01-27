@@ -41,5 +41,5 @@ class OTA {
         // LED state handling
         unsigned long previousMillis = 0;
         int led_interval = 2000;
-        int ledState = HIGH;
+        int ledState = LOW;
 };

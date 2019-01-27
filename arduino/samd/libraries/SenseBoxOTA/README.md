@@ -39,5 +39,10 @@ To understand what is happening the following hints may help:
 - The OTA functionality is defined in the code in `extras/ota_boot`, and put into the folder `src/boot/` in compiled binary form.
 - The OTA bootloader directly hands over to a user application if one is present, otherwise starts a hotspot and webserver.
 
+## known issues
+- accepts only one wifi client
+- webserver does not respond after one wifi disconnect
+- no code checksumming
+
 ## license
 GPL-3.0, Norwin Roosen

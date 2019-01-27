@@ -91,8 +91,10 @@
 
 // LEDs
 // ----
-#define PIN_LED     (7u) // D7/PA27 + D8/PA28
+#define PIN_LED     (7u) // D7/PA27 (red)
+#define PIN_LED2    (8u) // D8/PA28 (green)
 #define LED_BUILTIN PIN_LED
+#define LED_BUILTIN2 PIN_LED2
 
 // Analog pins
 // -----------

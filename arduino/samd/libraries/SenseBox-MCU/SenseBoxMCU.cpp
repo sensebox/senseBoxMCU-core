@@ -633,6 +633,18 @@ float GPS::getHdop()
 	return hdop;
 }
 
+float GPS::getDate()
+{
+	getGPS();
+	return date;
+}
+
+float GPS::getTime()
+{
+	getGPS();
+	return time;
+}
+
 void GPS::getGPS()
 {
 	Wire.requestFrom(0x42, 10);
@@ -646,6 +658,8 @@ void GPS::getGPS()
 					alt = gps->altitude.meters();
 					speed = gps->speed.kmph();
 					hdop = gps->hdop.hdop();
+					time = gps->time.value();
+					date = gps->date.value();
 				}
 }
 
@@ -829,3 +843,65 @@ float BMP280::getAltitude(float seaLevelhPa) {
   return altitude;
 }
 
+/* Button Library*/
+
+Button::Button(int pin)
+{
+    _pin = pin;
+}
+
+void Button::begin(){
+	pinMode(_pin, INPUT_PULLUP);
+	_state = digitalRead(_pin);
+}
+
+bool Button::isPressed(){
+	bool buttonState = 0;       
+	bool state = LOW;
+	buttonState = digitalRead(_pin);
+  	if (buttonState != _state) {
+    	state = HIGH;
+  	} else {
+    	state = LOW;
+  	}
+  	return state;
+}
+
+
+
+bool Button::getSwitch(){
+	int reading;
+	long time = 0;         // the last time the output pin was toggled
+	long debounce = 200;   // the debounce time, increase if the output flickers
+	reading = digitalRead(_pin);
+
+  if (reading == HIGH && previous == LOW && millis() - time > debounce) {
+    if (_switchState == HIGH)
+      _switchState = LOW;
+    else
+      _switchState = HIGH;
+
+    time = millis();    
+  }
+  previous = reading;
+  return _switchState;
+}
+
+bool Button::wasPressed(){
+	int reading;
+	long time = 0;         // the last time the output pin was toggled
+	long debounce = 200;   // the debounce time, increase if the output flickers
+	reading = digitalRead(_pin);
+
+if (reading != previous && millis() - time > debounce) {
+      if (reading == _state)
+	  _wasPressed = HIGH;
+	}
+    else
+      _wasPressed = LOW;
+
+    time = millis();    
+	previous = reading;
+	delay(50);
+  return _wasPressed;
+}

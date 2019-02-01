@@ -42,6 +42,9 @@ int ECCX08Class::begin()
 {
   _wire->begin();
 
+  wakeup();
+  idle();
+  
   long ver = version() & 0x0F00000;
 
   if (ver != 0x0500000 && ver != 0x0600000) {
@@ -228,6 +231,89 @@ int ECCX08Class::ecSign(int slot, const byte message[], byte signature[])
   return 1;
 }
 
+int ECCX08Class::beginSHA256()
+{
+  uint8_t status;
+
+  if (!wakeup()) {
+    return 0;
+  }
+
+  if (!sendCommand(0x47, 0x00, 0x0000)) {
+    return 0;
+  }
+
+  delay(9);
+
+  if (!receiveResponse(&status, sizeof(status))) {
+    return 0;
+  }
+
+  delay(1);
+  idle();
+
+  if (status != 0) {
+    return 0;
+  }
+
+  return 1;
+}
+
+int ECCX08Class::updateSHA256(const byte data[])
+{
+  uint8_t status;
+
+  if (!wakeup()) {
+    return 0;
+  }
+
+  if (!sendCommand(0x47, 0x01, 64, data, 64)) {
+    return 0;
+  }
+
+  delay(9);
+
+  if (!receiveResponse(&status, sizeof(status))) {
+    return 0;
+  }
+
+  delay(1);
+  idle();
+
+  if (status != 0) {
+    return 0;
+  }
+
+  return 1;
+}
+
+int ECCX08Class::endSHA256(byte result[])
+{
+  return endSHA256(NULL, 0, result);
+}
+
+int ECCX08Class::endSHA256(const byte data[], int length, byte result[])
+{
+  if (!wakeup()) {
+    return 0;
+  }
+
+  if (!sendCommand(0x47, 0x02, length, data, length)) {
+    return 0;
+  }
+
+  delay(9);
+
+  if (!receiveResponse(result, 32)) {
+    return 0;
+  }
+
+  delay(1);
+  idle();
+
+  return 1;
+}
+
 int ECCX08Class::readSlot(int slot, byte data[], int length)
 {
   if (slot < 0 || slot > 15) {
@@ -342,7 +428,7 @@ int ECCX08Class::wakeup()
   _wire->beginTransmission(0x00);
   _wire->endTransmission();
 
-  delayMicroseconds(800);
+  delayMicroseconds(1500);
 
   byte response;
 
@@ -364,6 +450,8 @@ int ECCX08Class::sleep()
     return 0;
   }
 
+  delay(1);
+
   return 1;
 }
 
@@ -375,6 +463,8 @@ int ECCX08Class::idle()
   if (_wire->endTransmission() != 0) {
     return 0;
   }
+
+  delay(1);
 
   return 1;
 }
@@ -391,7 +481,7 @@ long ECCX08Class::version()
     return 0;
   }
 
-  delay(1);
+  delay(2);
 
   if (!receiveResponse(&version, sizeof(version))) {
     return 0;
@@ -416,7 +506,7 @@ int ECCX08Class::challenge(const byte message[])
     return 0;
   }
 
-  delay(7);
+  delay(29);
 
   if (!receiveResponse(&status, sizeof(status))) {
     return 0;
@@ -449,7 +539,7 @@ int ECCX08Class::verify(const byte signature[], const byte pubkey[])
     return 0;
   }
 
-  delay(58);
+  delay(72);
 
   if (!receiveResponse(&status, sizeof(status))) {
     return 0;
@@ -475,7 +565,7 @@ int ECCX08Class::sign(int slot, byte signature[])
     return 0;
   }
 
-  delay(50);
+  delay(60);
 
   if (!receiveResponse(signature, 64)) {
     return 0;
@@ -505,7 +595,7 @@ int ECCX08Class::read(int zone, int address, byte buffer[], int length)
     return 0;
   }
 
-  delay(2);
+  delay(5);
 
   if (!receiveResponse(buffer, length)) {
     return 0;

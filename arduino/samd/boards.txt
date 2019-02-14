@@ -13,6 +13,7 @@ sb.vid.1=0x04D8
 sb.pid.1=0xEF67
 sb.bootloader.tool=openocd
 sb.bootloader.file=sensebox_mcu.bin
+sb.bootloader.size=0x2000
 sb.upload.tool=bossac
 sb.upload.protocol=sam-ba
 sb.upload.maximum_size=262144
@@ -31,3 +32,4 @@ sb.build.vid=0x04D8
 sb.build.pid=0xEF67
 sb.build.usb_product="senseBox MCU"
 sb.build.usb_manufacturer="senseBox"
+

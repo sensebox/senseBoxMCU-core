@@ -199,8 +199,8 @@ void initVariant()
   PORT->Group[0].OUTSET.reg = PORT_PA18; // high = XB1 CS off
   PORT->Group[0].DIRSET.reg = PORT_PA14; // XB2 CS
   PORT->Group[0].OUTSET.reg = PORT_PA14; // high = XB2 CS off
-  
-  // set default state for power pins 
+
+  // set default state for power pins
 #ifdef SB_DEFAULT_POWER_OFF
   PORT->Group[1].OUTCLR.reg = PORT_PB02; // low = UART Power off
   PORT->Group[1].OUTCLR.reg = PORT_PB11; // low = I2C Power off

@@ -32,4 +32,3 @@ sb.build.vid=0x04D8
 sb.build.pid=0xEF67
 sb.build.usb_product="senseBox MCU"
 sb.build.usb_manufacturer="senseBox"
-

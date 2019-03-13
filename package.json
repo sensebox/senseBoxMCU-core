@@ -1,6 +1,6 @@
 {
   "name": "senseboxmcu-core",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "senseBox MCU board support package",
   "main": "./arduino-test/build-sketches.js",
   "scripts": {

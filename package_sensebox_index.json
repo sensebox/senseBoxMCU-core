@@ -14,7 +14,7 @@
           "version": "1.2.1",
           "category": "contributed",
           "help": {"online": "http://www.sensebox.de/go"},
-          "url": "https://github.com/sensebox/senseBoxMCU-core/raw/master/arduino/samd.zip",
+          "url": "https://github.com/sensebox/senseBoxMCU-core/releases/download/1.2.1/samd.zip",
           "archiveFileName": "sensebox-samd-1.2.1.zip",
           "size": "1862528",
           "boards": [

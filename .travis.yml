@@ -26,4 +26,4 @@ before_script:
   - cp -a $TRAVIS_BUILD_DIR/arduino/samd/. /home/travis/.arduino15/packages/sensebox/hardware/samd/1.3.0
 script:
   - npm run test
-  - arduino --verbose-build --verify --board sensebox:samd:sb:power=on /home/travis/.arduino15/packages/sensebox/hardware/samd/1.2.1/libraries/tests/examples/mcu_component_test/mcu_component_test.ino
+  - arduino --verbose-build --verify --board sensebox:samd:sb:power=on /home/travis/.arduino15/packages/sensebox/hardware/samd/1.3.0/libraries/tests/examples/mcu_component_test/mcu_component_test.ino

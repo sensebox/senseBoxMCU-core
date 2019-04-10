@@ -1,7 +1,8 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
- * April 2018
- * Reedu GmbH & Co. KG
+ * Created: 2018/04/10
+ * last Modified: 2019/04/10 10:12:03
+ * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
 #include "SenseBoxMCU.h"
@@ -17,7 +18,7 @@ uint8_t Bee::connectToWifi(char* ssid, char* password)
 		Serial.begin(9600); //check if already connected
 		delay(1000);
 	}
-
+	
 	if (WiFi.status() == WL_NO_SHIELD) {
 		Serial.println("WiFi Bee not present.");
 		while (true);
@@ -32,8 +33,31 @@ uint8_t Bee::connectToWifi(char* ssid, char* password)
 		delay(5000);
 	}
 	Serial.println("Successfully connected to your WiFi.");
+	this->storeIpAddress();
 
 	return status;
+}
+
+void Bee::startAP(char* ssid){
+	nwid = ssid;
+  senseBoxIO.powerXB1(false); 
+  delay(250);
+  senseBoxIO.powerXB1(true);
+  if(WiFi.status() == WL_NO_SHIELD)
+  {
+    senseBoxIO.statusRed(); 
+    WiFi.end();
+    senseBoxIO.powerXB1(false);
+    return; 
+  }
+  int status = WiFi.beginAP(nwid);
+  if(status != WL_AP_LISTENING)
+  {
+    senseBoxIO.statusRed();
+    WiFi.end();
+    senseBoxIO.powerXB1(false);
+    return;
+  }	
 }
 
 char* Bee::getSsid()
@@ -46,6 +70,17 @@ char* Bee::getPassword()
 	return this->pw;
 }
 
+char* Bee::getIpAddress()
+{
+    return this->ip;
+}
+
+ void Bee::storeIpAddress()
+{
+    IPAddress ip = WiFi.localIP();
+    sprintf(this->ip, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+}
+
 OpenSenseMap::OpenSenseMap(const char* boxId, Bee* bee)
 {
 	senseBoxID = boxId;
@@ -54,7 +89,7 @@ OpenSenseMap::OpenSenseMap(const char* boxId, Bee* bee)
 }
 
 void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
-{
+{ 
 	if (WiFi.status() != WL_CONNECTED) {
 		WiFi.disconnect();
 		delay(1000); // wait 1s
@@ -67,38 +102,38 @@ void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
 		client->stop();
 		delay(1000);
 	}
-	// prepare data. json must look like: {"value":"12.5"}
-	char obs[10];
+	// prepare data. json must look like: {"value":"12.5"} 
+	char obs[10]; 
 	snprintf(obs, sizeof(obs), "%f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
-	String value = "{\"value\":";
-	value += obs;
-	value += "}";
-	Serial.println(value);
+	String value = "{\"value\":"; 
+	value += obs; 
+	value += "}"; 
+	Serial.println(value); 
 	Serial.println(value.length());
 	Serial.println(senseBoxID);
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(server, port)) 
 	{
-		Serial.println("connected");
-		// Make a HTTP Post request:
-		client->print("POST /boxes/");
+		Serial.println("connected"); 
+		// Make a HTTP Post request: 
+		client->print("POST /boxes/"); 
 		client->print(senseBoxID);
-		client->print("/");
-		client->print(sensorID);
-		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
-		client->println("Content-Type: application/json");
-		client->println("Connection: close");
-		client->print("Content-Length: ");
-		client->println(value.length());
-		client->println();
-		client->print(value);
+		client->print("/"); 
+		client->print(sensorID); 
+		client->println(" HTTP/1.1"); 
+		client->println("Host: ingress.opensensemap.org"); 
+		client->println("Content-Type: application/json"); 
+		client->println("Connection: close");  
+		client->print("Content-Length: "); 
+		client->println(value.length()); 
+		client->println(); 
+		client->print(value); 
 		client->println();
 	}
-	else
+	else 
 	{
 		Serial.println("Connection failed!");
 		return;
@@ -120,7 +155,7 @@ void OpenSenseMap::uploadMeasurement(float measurement, char* sensorID)
 }
 
 void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, float lat, float lng)
-{
+{ 
 	if (WiFi.status() != WL_CONNECTED) {
 		WiFi.disconnect();
 		delay(1000); // wait 1s
@@ -133,7 +168,7 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, fl
 		client->stop();
 		delay(1000);
 	}
-	// prepare data. json must look like: {"value":"12.5"}
+	// prepare data. json must look like: {"value":"12.5"} 
 	char obs[10];
 	char clat[10];
 	char clng[10];
@@ -141,39 +176,39 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char* sensorID, fl
 	snprintf(clat, sizeof(obs), "%f", lat);
 	snprintf(clng, sizeof(obs), "%f", lng); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
-	String value = "{\"value\":";
+	String value = "{\"value\":"; 
 	value += obs;
 	value +=  ",";
 	value += "\"location\":[";
 	value += clng;
 	value += ",";
 	value += clat;
-	value += "]}";
-	Serial.println(value);
+	value += "]}"; 
+	Serial.println(value); 
 	Serial.println(value.length());
 	Serial.println(senseBoxID);
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(server, port)) 
 	{
-		Serial.println("connected");
-		// Make a HTTP Post request:
-		client->print("POST /boxes/");
+		Serial.println("connected"); 
+		// Make a HTTP Post request: 
+		client->print("POST /boxes/"); 
 		client->print(senseBoxID);
-		client->print("/");
-		client->print(sensorID);
-		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
-		client->println("Content-Type: application/json");
-		client->println("Connection: close");
-		client->print("Content-Length: ");
-		client->println(value.length());
-		client->println();
-		client->print(value);
+		client->print("/"); 
+		client->print(sensorID); 
+		client->println(" HTTP/1.1"); 
+		client->println("Host: ingress.opensensemap.org"); 
+		client->println("Content-Type: application/json"); 
+		client->println("Connection: close");  
+		client->print("Content-Length: "); 
+		client->println(value.length()); 
+		client->println(); 
+		client->print(value); 
 		client->println();
 	}
-	else
+	else 
 	{
 		Serial.println("Connection failed!");
 		return;
@@ -257,10 +292,10 @@ uint8_t HDC1080::begin(){
   Wire.begin();
   //Write to configuration register
   Wire.beginTransmission(HDC1080_ADDR); // I2C Adress of HDC1080
-  Wire.write(0x02); // Point to configuration register on 0x02
+  Wire.write(0x02); // Point to configuration register on 0x02 
   Wire.write(0x90); // Configuration 1 0 0 1 0 0 0 0 0x00
-  Wire.write(0x00); //
-
+  Wire.write(0x00); // 
+  
   return Wire.endTransmission();
 }
 
@@ -320,7 +355,7 @@ uint8_t VEML6070::begin(){
 	Wire.begin();
 	Wire.beginTransmission(VEML6070_ADDR);
 	Wire.write((VEML6070_INTEGRATION_TIME_1<<2) | 0x02);
-
+	
 	return Wire.endTransmission();
 }
 
@@ -376,18 +411,33 @@ unsigned long TSL45315::getIlluminance(){
 	return (unsigned long)(lux);
 }
 
-uint8_t BMX055::begin(){
+uint8_t BMX055::beginAcc(char range){
+	
+	char _range = range;	//2g Range 0x03
+
+	switch (range){
+	case 0x03: 
+	accRange = (2.0/2048.0);
+	break;
+	case 0x05:
+	accRange = (4.0/2048.0);
+	break;
+	case 0x08:
+	accRange = (8.0/2048.0);
+	break;
+	case 0x0C:
+	accRange = (16.0/2048.0);
+	break;
+	}
 	// Initialise I2C communication as MASTER
 	Wire1.begin();
-	// Initialise Serial Communication, set baud rate = 9600
-	Serial.begin(9600);
 
 	// Start I2C Transmission
 	Wire1.beginTransmission(BMX055_ACCL_ADDR);
 	// Select PMU_Range register
 	Wire1.write(0x0F);
 	// Range = +/- 2g
-	Wire1.write(0x03);
+	Wire1.write(range);
 	// Stop I2C Transmission
 	Wire1.endTransmission();
 
@@ -408,6 +458,11 @@ uint8_t BMX055::begin(){
 	Wire1.write(0x00);
 	// Stop I2C Transmission on the device
 	Wire1.endTransmission();
+
+}
+
+uint8_t BMX055::beginGyro (){
+
 
 	// Start I2C Transmission
 	Wire1.beginTransmission(BMX055_GYRO_ADDR);
@@ -435,6 +490,10 @@ uint8_t BMX055::begin(){
 	Wire1.write(0x00);
 	// Stop I2C Transmission
 	Wire1.endTransmission();
+
+}
+
+uint8_t BMX055::beginMagn(){
 
 	// Start I2C Transmission
 	Wire1.beginTransmission(BMX055_MAGN_ADDR);
@@ -483,7 +542,7 @@ uint8_t BMX055::begin(){
 	delay(300);
 }
 
-void BMX055::getAcceleration(int *x, int *y, int *z){
+void BMX055::getAcceleration(float *x, float *y, float *z, float *accTotal){
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -503,15 +562,119 @@ void BMX055::getAcceleration(int *x, int *y, int *z){
 	// Convert the data to 12-bits
 	int xAccl = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
 	if (xAccl > 2047) xAccl -= 4096;
-	*x = xAccl;
+	*x = xAccl*accRange;
 
 	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
 	if (yAccl > 2047) yAccl -= 4096;
-	*y = yAccl;
+	*y = yAccl*accRange;
 
 	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
 	if (zAccl > 2047) zAccl -= 4096;
-	*z = zAccl;
+	*z = zAccl*accRange;
+
+	*accTotal = 9.81 * sqrt((sq(*x)+sq(*y)+sq(*z)));
+}
+
+float BMX055::getAccelerationX(){
+		for (int i = 0; i < 6; i++)
+	{
+		// Start I2C Transmission
+		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		// Select data register
+		Wire1.write((2 + i));
+		// Stop I2C Transmission
+		Wire1.endTransmission();
+		// Request 1 byte of data
+		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		// Read 6 bytes of data
+		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
+		if (Wire1.available() == 1) _data[i] = Wire1.read();
+	}
+
+	// Convert the data to 12-bits
+	int xAccl = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
+	if (xAccl > 2047) xAccl -= 4096;
+	float x = xAccl*accRange;
+	return x;
+
+	}
+
+float BMX055::getAccelerationY(){
+			for (int i = 0; i < 6; i++)
+	{
+		// Start I2C Transmission
+		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		// Select data register
+		Wire1.write((2 + i));
+		// Stop I2C Transmission
+		Wire1.endTransmission();
+		// Request 1 byte of data
+		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		// Read 6 bytes of data
+		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
+		if (Wire1.available() == 1) _data[i] = Wire1.read();
+	}
+
+	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
+	if (yAccl > 2047) yAccl -= 4096;
+	float y = yAccl*accRange;	
+	return y;
+	}
+
+float BMX055::getAccelerationZ(){
+				for (int i = 0; i < 6; i++)
+	{
+		// Start I2C Transmission
+		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		// Select data register
+		Wire1.write((2 + i));
+		// Stop I2C Transmission
+		Wire1.endTransmission();
+		// Request 1 byte of data
+		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		// Read 6 bytes of data
+		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
+		if (Wire1.available() == 1) _data[i] = Wire1.read();
+	}
+
+	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
+	if (zAccl > 2047) zAccl -= 4096;
+	float z = zAccl*accRange;
+	return z;
+}
+
+float BMX055::getAccelerationTotal(){
+
+	for (int i = 0; i < 6; i++)
+	{
+		// Start I2C Transmission
+		Wire1.beginTransmission(BMX055_ACCL_ADDR);
+		// Select data register
+		Wire1.write((2 + i));
+		// Stop I2C Transmission
+		Wire1.endTransmission();
+		// Request 1 byte of data
+		Wire1.requestFrom(BMX055_ACCL_ADDR, 1);
+		// Read 6 bytes of data
+		// xAccl lsb, xAccl msb, yAccl lsb, yAccl msb, zAccl lsb, zAccl msb
+		if (Wire1.available() == 1) _data[i] = Wire1.read();
+	}
+
+	// Convert the data to 12-bits
+	int xAccl = ((_data[1] * 256) + (_data[0] & 0xF0)) / 16;
+	if (xAccl > 2047) xAccl -= 4096;
+	float x = xAccl*accRange;
+
+	int yAccl = ((_data[3] * 256) + (_data[2] & 0xF0)) / 16;
+	if (yAccl > 2047) yAccl -= 4096;
+	float y = yAccl*accRange;
+
+	int zAccl = ((_data[5] * 256) + (_data[4] & 0xF0)) / 16;
+	if (zAccl > 2047) zAccl -= 4096;
+	float z = zAccl*accRange;
+
+	float accTotal = 9.81 * sqrt((sq(x)+sq(y)+sq(z)));
+	return accTotal;
 }
 
 void BMX055::getMagnet(int *x, int *y, int *z){
@@ -600,6 +763,7 @@ long Ultrasonic::getDistance(void)
 
 void GPS::begin()
 {
+	delay(20);
 	Wire.begin();
 	gps = new TinyGPSPlus;
 }
@@ -679,6 +843,7 @@ void GPS::getGPS()
 */
 
 bool BMP280::begin() {
+	delay(20);
 	Wire.begin();
 	Wire.beginTransmission(118);
 
@@ -905,3 +1070,40 @@ if (reading != previous && millis() - time > debounce) {
 	delay(50);
   return _wasPressed;
 }
+
+Microphone::Microphone (int pin){
+	_pin = pin;
+}
+
+void Microphone::begin (){
+
+}
+
+float Microphone::getValue(){
+unsigned long start = millis();  // Start des Messintervalls
+ unsigned int peakToPeak = 0;   // Abstand von maximalem zu minimalem Amplitudenausschlag
+ unsigned int signalMax = 0;    
+ unsigned int signalMin = 1023;
+
+ // Sammle Daten für 100 Millisekunden
+ while (millis() - start < sampleTime)
+    {
+    micValue = analogRead(_pin); // Messe den aktuellen Wert
+        if (micValue < 1023)  // sortiere Fehlmessungen aus, deren Werte über dem max Wert 1024 liegen 
+        {
+            if (micValue > signalMax)
+            {
+            signalMax = micValue;  // speichere den maximal gemessenen Wert
+            }
+        else if (micValue < signalMin)
+            {
+            signalMin = micValue;  // speichere den minimal gemessenen Wert
+            }
+        }
+    }
+ peakToPeak = signalMax - signalMin;  // max - min = Abstand von maximalem zu minimalem Amplitudenausschlag
+ double volts = (peakToPeak * 5.0) / 1023;  // wandle in Volt um
+ return volts;
+}
+
+

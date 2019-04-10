@@ -14,7 +14,9 @@
 #include <TinyGPS++.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-//#include "SenseBoxIO.h"
+#include "senseBoxIO.h"
+#include <SD.h>
+#include "WebUtil.h"
 
 #define HDC1080_ADDR 0x40
 #define BMP280_ADDR 0x76
@@ -26,17 +28,21 @@
 
 #define VEML6070_INTEGRATION_TIME_1 0x01 //IT_1: 5.625 uW/cm2/step
 
-class Bee
+class Bee 
 {
 	public:
 	Bee();
 		uint8_t connectToWifi(char* ssid, char* password);
+		void startAP(char* ssid);
 		char* getSsid();
 		char* getPassword();
+		char* getIpAddress();
 	private:
 		char* nwid = "";
 		char* pw = "";
+		char ip[15];
 		int status = WL_IDLE_STATUS;
+		void storeIpAddress();
 };
 
 
@@ -74,7 +80,7 @@ class HDC1080
 	public:
 		uint8_t begin(void);
 		double getTemperature(void);
-		double getHumidity(void);
+		double getHumidity(void); 
 };
 
 class VEML6070
@@ -88,7 +94,7 @@ class TSL45315
 {
 	public:
 		uint8_t begin(void);
-		unsigned long getIlluminance(void);
+		unsigned long getIlluminance(void); 
 };
 
 class Ultrasonic
@@ -104,12 +110,20 @@ class Ultrasonic
 class BMX055
 {
 	public:
-		uint8_t begin(void);
-		void getAcceleration(int *x, int *y, int *z);
+		uint8_t beginAcc(char range);
+		uint8_t beginGyro(void);
+		uint8_t beginMagn(void);
+		void getAcceleration(float *x, float *y, float *z, float *accTotal);
+		float getAccelerationX();
+		float getAccelerationY();
+		float getAccelerationZ();
+		float getAccelerationTotal();
 		void getMagnet(int *x, int *y, int *z);
 		void getRotation(int *x, int *y, int *z);
 	private:
 		unsigned int _data[6];
+		char _range;
+		float accRange;
 };
 
 class GPS
@@ -153,6 +167,20 @@ class Button
 	int _wasPressed = LOW;
 	int previous = LOW;
 	
+};
+
+class Microphone
+
+{
+	public: 
+	Microphone (int pin);
+		void begin();
+		float getValue();
+
+	private:
+	unsigned int _pin;
+	unsigned int micValue;
+	const int sampleTime = 100;
 };
 
 
@@ -254,5 +282,4 @@ private:
 };
 
 //todo:
-//(GPS      [2]?)
 //BME680   [3]

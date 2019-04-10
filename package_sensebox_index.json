@@ -16,7 +16,7 @@
           "help": {"online": "http://www.sensebox.de/go"},
           "url": "https://github.com/sensebox/senseBoxMCU-core/releases/download/1.3.0/samd.zip",
           "archiveFileName": "sensebox-samd-1.3.0.zip",
-          "size": "1872272",
+          "size": "1878299",
           "boards": [
             {"name": "senseBox MCU (SAMD21)"}
           ]

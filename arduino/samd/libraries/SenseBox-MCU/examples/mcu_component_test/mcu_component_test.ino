@@ -25,7 +25,7 @@
 const char *ssid = ""; // your network SSID (name)
 const char *pass = ""; // your network password
 /**********************************/
-char server[] = "internet-test.testing.opensensemap.org";
+char server[] = "internet-test.opensensemap.org";
 #ifdef ENABLE_WIFI
 int status = WL_IDLE_STATUS;
 WiFiClient client;

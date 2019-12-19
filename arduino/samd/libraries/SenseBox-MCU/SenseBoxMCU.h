@@ -32,7 +32,7 @@ class Bee
 {
 	public:
 	Bee();
-		uint8_t connectToUnsecuredWifi (char* ssid);
+		uint8_t connectToWifi(char* ssid);
 		uint8_t connectToWifi(char* ssid, char* password);
 		void startAP(char* ssid);
 		char* getSsid();

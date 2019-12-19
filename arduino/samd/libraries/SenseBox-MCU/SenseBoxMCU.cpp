@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2019/12/18 15:37:04
+ * last Modified: 2019/12/19 08:19:21
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -9,7 +9,7 @@
 
 Bee::Bee() {}
 
-uint8_t Bee::connectToUnsecuredWifi(char *ssid)
+uint8_t Bee::connectToWifi(char *ssid)
 {
 	nwid = ssid;
 	if (!Serial)

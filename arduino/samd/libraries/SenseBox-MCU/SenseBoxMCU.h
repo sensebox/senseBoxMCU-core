@@ -50,7 +50,7 @@ class Bee
 class OpenSenseMap
 {
 	public:
-		OpenSenseMap(const char* boxId, Bee* bee);
+		OpenSenseMap(const char* boxId, Bee* bee, const char* host);
 		void uploadMeasurement(float value, char* sensorID);
 		void uploadMobileMeasurement(float value, char* sensorID, float lat, float lng);
 		void setUploadInterval(unsigned int);
@@ -61,6 +61,7 @@ class OpenSenseMap
 		unsigned int uploadInterval = 10000;
 		Client* client = NULL;
 		Bee* xbee = NULL;
+		const char* osemHost;
 };
 
 class SDS011

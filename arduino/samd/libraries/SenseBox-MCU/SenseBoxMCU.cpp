@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2019/12/19 08:19:21
+ * last Modified: 2020/02/12 18:25:01
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -116,11 +116,12 @@ void Bee::storeIpAddress()
 	sprintf(this->ip, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 }
 
-OpenSenseMap::OpenSenseMap(const char *boxId, Bee *bee)
+OpenSenseMap::OpenSenseMap(const char *boxId, Bee *bee, const char *host)
 {
 	senseBoxID = boxId;
 	client = new WiFiClient;
 	xbee = bee;
+	osemHost = host;
 }
 
 void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
@@ -140,8 +141,8 @@ void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
 		delay(1000);
 	}
 	// prepare data. json must look like: {"value":"12.5"}
-	char obs[10];
-	snprintf(obs, sizeof(obs), "%f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
+	char obs[200];
+	snprintf(obs, sizeof(obs), "%9.2f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
 	String value = "{\"value\":";
 	value += obs;
@@ -152,16 +153,18 @@ void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(osemHost, port))
 	{
 		Serial.println("connected");
+		Serial.println(osemHost);
 		// Make a HTTP Post request:
 		client->print("POST /boxes/");
 		client->print(senseBoxID);
 		client->print("/");
 		client->print(sensorID);
 		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
+		client->print("Host: ");
+		client->println(osemHost);
 		client->println("Content-Type: application/json");
 		client->println("Connection: close");
 		client->print("Content-Length: ");
@@ -231,7 +234,7 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char *sensorID, fl
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(osemHost, port))
 	{
 		Serial.println("connected");
 		// Make a HTTP Post request:
@@ -240,7 +243,8 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char *sensorID, fl
 		client->print("/");
 		client->print(sensorID);
 		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
+		client->print("Host:");
+		client->println(osemHost);
 		client->println("Content-Type: application/json");
 		client->println("Connection: close");
 		client->print("Content-Length: ");

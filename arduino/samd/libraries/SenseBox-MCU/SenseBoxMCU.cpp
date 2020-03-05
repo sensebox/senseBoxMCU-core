@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2019/12/19 08:19:21
+ * last Modified: 2020/03/04 15:03:53
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -116,11 +116,12 @@ void Bee::storeIpAddress()
 	sprintf(this->ip, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 }
 
-OpenSenseMap::OpenSenseMap(const char *boxId, Bee *bee)
+OpenSenseMap::OpenSenseMap(const char *boxId, Bee *bee, const char *host)
 {
 	senseBoxID = boxId;
 	client = new WiFiClient;
 	xbee = bee;
+	osemHost = host;
 }
 
 void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
@@ -140,8 +141,8 @@ void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
 		delay(1000);
 	}
 	// prepare data. json must look like: {"value":"12.5"}
-	char obs[10];
-	snprintf(obs, sizeof(obs), "%f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
+	char obs[200];
+	snprintf(obs, sizeof(obs), "%9.2f", measurement); //http://forum.arduino.cc/index.php?topic=243660.0
 	//dtostrf(measurement, 5, 2, obs);
 	String value = "{\"value\":";
 	value += obs;
@@ -152,16 +153,18 @@ void OpenSenseMap::uploadMeasurement(float measurement, char *sensorID)
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(osemHost, port))
 	{
 		Serial.println("connected");
+		Serial.println(osemHost);
 		// Make a HTTP Post request:
 		client->print("POST /boxes/");
 		client->print(senseBoxID);
 		client->print("/");
 		client->print(sensorID);
 		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
+		client->print("Host: ");
+		client->println(osemHost);
 		client->println("Content-Type: application/json");
 		client->println("Connection: close");
 		client->print("Content-Length: ");
@@ -231,7 +234,7 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char *sensorID, fl
 	Serial.println(sensorID);
 	// post observation to: http://opensensemap.org:80/boxes/boxId/sensorId
 	Serial.print("connecting...");
-	if (client->connect(server, port))
+	if (client->connect(osemHost, port))
 	{
 		Serial.println("connected");
 		// Make a HTTP Post request:
@@ -240,7 +243,8 @@ void OpenSenseMap::uploadMobileMeasurement(float measurement, char *sensorID, fl
 		client->print("/");
 		client->print(sensorID);
 		client->println(" HTTP/1.1");
-		client->println("Host: ingress.opensensemap.org");
+		client->print("Host:");
+		client->println(osemHost);
 		client->println("Content-Type: application/json");
 		client->println("Connection: close");
 		client->print("Content-Length: ");
@@ -900,43 +904,148 @@ void GPS::begin()
 
 float GPS::getLatitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		lat = gps->location.lat();
+	}
 	return lat;
 }
 
 float GPS::getLongitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		lng = gps->location.lng();
+	}
 	return lng;
 }
 float GPS::getAltitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		alt = gps->altitude.meters();
+	}
+
 	return alt;
 }
 
 float GPS::getSpeed()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		speed = gps->speed.kmph();
+	}
+
 	return speed;
 }
 
 float GPS::getHdop()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		hdop = gps->hdop.hdop();
+	}
+
 	return hdop;
 }
 
 float GPS::getDate()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		date = gps->date.value();
+	}
 	return date;
 }
 
 float GPS::getTime()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		time = gps->time.value();
+	}
 	return time;
+}
+
+int GPS::getYear()
+{
+
+	if (gps->location.isValid())
+	{
+		year = gps->date.year();
+	}
+	return year;
+}
+
+int GPS::getMonth()
+{
+
+	if (gps->location.isValid())
+	{
+		month = gps->date.month();
+	}
+	return month;
+}
+
+int GPS::getDay()
+{
+
+	if (gps->location.isValid())
+	{
+		day = gps->date.day();
+	}
+	return day;
+}
+
+int GPS::getHour()
+{
+
+	if (gps->location.isValid())
+	{
+		hour = gps->time.hour();
+	}
+	return hour;
+}
+
+int GPS::getMinute()
+{
+
+	if (gps->location.isValid())
+	{
+		minute = gps->time.minute();
+	}
+	return minute;
+}
+
+int GPS::getSecond()
+{
+
+	if (gps->location.isValid())
+	{
+		second = gps->time.second();
+	}
+	return second;
+}
+char *GPS::getTimeStamp()
+{
+
+	if (gps->location.isValid())
+	{
+		year = gps->date.year();
+		month = gps->date.month();
+		day = gps->date.day();
+		hour = gps->time.hour();
+		minute = gps->time.minute();
+		second = gps->time.second();
+
+		sprintf(tsBuffer, "%04d-%02d-%02dT%02d:%02d:%02dZ",
+				year, month, day, hour, minute, second);
+	}
+
+	return tsBuffer;
 }
 
 void GPS::getGPS()
@@ -944,17 +1053,7 @@ void GPS::getGPS()
 	Wire.requestFrom(0x42, 10);
 	while (Wire.available())
 		//while (Wire.available() > 0)
-		if (gps->encode(Wire.read()))
-			if (gps->location.isValid())
-			{
-				lat = gps->location.lat();
-				lng = gps->location.lng();
-				alt = gps->altitude.meters();
-				speed = gps->speed.kmph();
-				hdop = gps->hdop.hdop();
-				time = gps->time.value();
-				date = gps->date.value();
-			}
+		gps->encode(Wire.read());
 }
 
 /*  This is a library for the BMP280 pressure sensor

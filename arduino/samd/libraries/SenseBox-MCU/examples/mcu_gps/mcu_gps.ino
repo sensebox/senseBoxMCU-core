@@ -8,11 +8,14 @@ float speed;
 float date;
 float time;
 
-void setup() {
+void setup()
+{
   gps.begin();
 }
 
-void loop() {
+void loop()
+{
+  gps.getGPS();
   lat = gps.getLatitude();
   lng = gps.getLongitude();
   alt = gps.getAltitude();
@@ -20,18 +23,16 @@ void loop() {
   date = gps.getDate();
   time = gps.getTime();
 
-  
-  Serial.print(lat,6);
+  Serial.print(lat, 6);
   Serial.print(F(","));
-  Serial.print(lng,6);
+  Serial.print(lng, 6);
   Serial.print(F(","));
-  Serial.println(alt,1);
+  Serial.println(alt, 1);
   Serial.print(F(","));
-  Serial.println(speed,4);
+  Serial.println(speed, 4);
   Serial.print(F(","));
   Serial.println(date);
   Serial.print(F(","));
   Serial.println(time);
   delay(100);
 }
-

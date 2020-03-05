@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2020/02/12 18:25:01
+ * last Modified: 2020/03/04 15:03:53
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -904,43 +904,148 @@ void GPS::begin()
 
 float GPS::getLatitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		lat = gps->location.lat();
+	}
 	return lat;
 }
 
 float GPS::getLongitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		lng = gps->location.lng();
+	}
 	return lng;
 }
 float GPS::getAltitude()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		alt = gps->altitude.meters();
+	}
+
 	return alt;
 }
 
 float GPS::getSpeed()
 {
-	getGPS();
+	if (gps->location.isValid())
+	{
+		speed = gps->speed.kmph();
+	}
+
 	return speed;
 }
 
 float GPS::getHdop()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		hdop = gps->hdop.hdop();
+	}
+
 	return hdop;
 }
 
 float GPS::getDate()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		date = gps->date.value();
+	}
 	return date;
 }
 
 float GPS::getTime()
 {
-	getGPS();
+
+	if (gps->location.isValid())
+	{
+		time = gps->time.value();
+	}
 	return time;
+}
+
+int GPS::getYear()
+{
+
+	if (gps->location.isValid())
+	{
+		year = gps->date.year();
+	}
+	return year;
+}
+
+int GPS::getMonth()
+{
+
+	if (gps->location.isValid())
+	{
+		month = gps->date.month();
+	}
+	return month;
+}
+
+int GPS::getDay()
+{
+
+	if (gps->location.isValid())
+	{
+		day = gps->date.day();
+	}
+	return day;
+}
+
+int GPS::getHour()
+{
+
+	if (gps->location.isValid())
+	{
+		hour = gps->time.hour();
+	}
+	return hour;
+}
+
+int GPS::getMinute()
+{
+
+	if (gps->location.isValid())
+	{
+		minute = gps->time.minute();
+	}
+	return minute;
+}
+
+int GPS::getSecond()
+{
+
+	if (gps->location.isValid())
+	{
+		second = gps->time.second();
+	}
+	return second;
+}
+char *GPS::getTimeStamp()
+{
+
+	if (gps->location.isValid())
+	{
+		year = gps->date.year();
+		month = gps->date.month();
+		day = gps->date.day();
+		hour = gps->time.hour();
+		minute = gps->time.minute();
+		second = gps->time.second();
+
+		sprintf(tsBuffer, "%04d-%02d-%02dT%02d:%02d:%02dZ",
+				year, month, day, hour, minute, second);
+	}
+
+	return tsBuffer;
 }
 
 void GPS::getGPS()
@@ -948,17 +1053,7 @@ void GPS::getGPS()
 	Wire.requestFrom(0x42, 10);
 	while (Wire.available())
 		//while (Wire.available() > 0)
-		if (gps->encode(Wire.read()))
-			if (gps->location.isValid())
-			{
-				lat = gps->location.lat();
-				lng = gps->location.lng();
-				alt = gps->altitude.meters();
-				speed = gps->speed.kmph();
-				hdop = gps->hdop.hdop();
-				time = gps->time.value();
-				date = gps->date.value();
-			}
+		gps->encode(Wire.read());
 }
 
 /*  This is a library for the BMP280 pressure sensor

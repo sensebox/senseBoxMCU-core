@@ -28,7 +28,7 @@ const char *pass = ""; // your network password
 char server[] = "internet-test.testing.opensensemap.org";
 #ifdef ENABLE_WIFI
 int status = WL_IDLE_STATUS;
-WiFiClient client;
+WiFiSSLClient client;
 #endif
 
 #ifdef ENABLE_ETHERNET
@@ -475,7 +475,7 @@ void connectionWiFiTest(){
   for (uint8_t timeout = 2; timeout != 0; timeout--)
   {
     Serial.print("Calling openSenseMap server...");
-    if (client.connect(server, 80))
+    if (client.connect(server, 443))
     {
       Serial.println("connected!");
       // Make a HTTP request:
@@ -534,7 +534,7 @@ void connectionEthernetTest() {
   for (uint8_t timeout = 2; timeout != 0; timeout--)
   {
     Serial.print("Calling openSenseMap server...");
-    if (ethernetClient.connect(server, 80))
+    if (ethernetClient.connect(server, 443))
     {
       Serial.println("connected!");
       // Make a HTTP request:

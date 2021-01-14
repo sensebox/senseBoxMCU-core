@@ -24,13 +24,17 @@
 
 RV8523::RV8523(void)
 {
-  Wire.begin();
-
   return;
 }
 
 
 //-------------------- Public --------------------
+
+
+void RV8523::begin(void)
+{
+  Wire.begin(); //init I2C lib
+}
 
 
 void RV8523::start(void)
@@ -136,7 +140,7 @@ void RV8523::batterySwitchOver(int on) //activate/deactivate battery switch over
     Wire.write(byte(0x02)); //control 3
     if(on)
     {
-      Wire.write(val & ~0xE0); //battery switchover in standard mode
+      Wire.write(val & 0b00111111); //battery switchover in standard mode
     }
     else
     {

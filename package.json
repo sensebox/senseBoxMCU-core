@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node arduino-test/build-sketches.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sensebox/senseBoxMCU-core.git"

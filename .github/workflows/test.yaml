@@ -9,9 +9,29 @@ on:
       - master
 
 jobs:
+  setup:
+    name: Setup test matrix
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract all versions
+        id: set-matrix
+        run: |
+          echo "::set-output name=matrix::$(jq -crM '[.packages[0] | .platforms[] | .version ]' package_sensebox_index.json)"
+
+              # here, we save the result of this 1st phase to the "outputs"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
   compile:
+    needs: setup
     name: Test compilation
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        version: ${{ fromJson(needs.provide_packages_json.outputs.matrix) }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -34,4 +54,4 @@ jobs:
           npm ci
           curl -L https://github.com/arduino/arduino-cli/releases/download/0.16.1/arduino-cli_0.16.1_Linux_64bit.tar.gz | tar xvz arduino-cli
           ./arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install arduino:samd
-          ./arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install sensebox:samd
+          ./arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install "sensebox:samd@${{ matrix.version }}"

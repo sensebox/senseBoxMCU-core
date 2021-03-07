@@ -41,6 +41,7 @@ jobs:
           binary: "arduino-cli"
           version: "0.16.1"
           download_url: "https://github.com/arduino/${binary}/releases/download/${version}/${binary}_${version}_Linux_64bit.tar.gz"
+          tarball_binary_path: "${binary}"
 
       - name: "Try installing core sensebox:samd@${{ matrix.version }}"
         run: arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install "sensebox:samd@${{ matrix.version }}"

@@ -19,7 +19,8 @@
           },
           "url": "https://github.com/sensebox/senseBoxMCU-core/releases/download/1.3.3/samd.zip",
           "archiveFileName": "sensebox-samd-1.3.3.zip",
-          "size": "1826702",
+          "size": "1836508",
+          "checksum": "SHA-256:578ef1f6f69fac6961d8d5bf7d262ce3a59ffd4a84659e876876c0246a74f814",
           "boards": [
             {
               "name": "senseBox MCU (SAMD21)"

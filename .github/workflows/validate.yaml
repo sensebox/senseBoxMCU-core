@@ -19,8 +19,6 @@ jobs:
         id: set-matrix
         run: |
           echo "::set-output name=matrix::$(jq -crM '[.packages[0] | .platforms[] | .version ]' package_sensebox_index.json)"
-
-              # here, we save the result of this 1st phase to the "outputs"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 

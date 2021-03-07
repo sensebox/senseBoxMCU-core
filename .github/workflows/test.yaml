@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install arduino-cli
-        uses: giantswarm/install-binary-action@5972d5a
+        uses: giantswarm/install-binary-action@5972d5adf093d659091fa22c136a332453247b43
         with:
           binary: "arduino-cli"
           version: "0.16.1"

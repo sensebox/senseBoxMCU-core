@@ -1,9 +1,9 @@
 name: Validate package index
 
 on:
-  push: {} # todo remove
-    # branches:
-    #   - master
+  push:
+    branches:
+      - master
   pull_request:
     branches:
       - master

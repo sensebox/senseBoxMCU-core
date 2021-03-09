@@ -1,10 +1,7 @@
-name: Validate package index
+name: Validate stable package index
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
@@ -24,7 +21,7 @@ jobs:
 
   validate:
     needs: setup
-    name: Validate package index
+    name: Validate stable package index
     runs-on: ubuntu-20.04
     strategy:
       matrix:

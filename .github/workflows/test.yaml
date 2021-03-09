@@ -1,4 +1,4 @@
-name: Validate package index
+name: Test compilation with development package
 
 on:
   push:
@@ -15,6 +15,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Copy arduino directory into /var/www/html
+        run: |
+          sudo cp -r arduino /var/www/html/
+
+      - name: Start nginx service
+        run: |
+          sudo systemctl start nginx.service
+          sudo systemctl status nginx.service
 
       - uses: actions/setup-node@v2
         with:
@@ -54,15 +63,17 @@ jobs:
           download_url: "https://github.com/arduino/${binary}/releases/download/${version}/${binary}_${version}_Linux_64bit.tar.gz"
           tarball_binary_path: "${binary}"
 
+      - name: Try installing development core sensebox:samd
+        run: arduino-cli --additional-urls "file://$(pwd)/package_sensebox-dev_index.json" core install sensebox:samd
+
       - name: Install test deps
         run: |
           npm ci
-          arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install arduino:samd
-          arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install sensebox:samd
+          arduino-cli core install arduino:samd
 
       - name: Compile mcu_component_test.ino
         run: |
-          version=$(jq -r ".packages[0] | .platforms[0] | .version" package_sensebox_index.json)
+          version=$(jq -r ".packages[0] | .platforms[0] | .version" package_sensebox-dev_index.json)
           arduino-cli compile --fqbn sensebox:samd:sb:power=on "/home/runner/.arduino15/packages/sensebox/hardware/samd/$version/libraries/tests/examples/mcu_component_test/mcu_component_test.ino"
 
       - name: Execute test suite

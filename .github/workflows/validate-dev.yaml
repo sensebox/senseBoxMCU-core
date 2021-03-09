@@ -22,6 +22,7 @@ jobs:
       - name: Start nginx service
         run: |
           sudo systemctl start nginx.service
+          sudo systemctl status nginx.service
 
   validate:
     needs: setup

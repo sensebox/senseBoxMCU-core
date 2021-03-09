@@ -1,0 +1,34 @@
+{
+  "packages": [
+    {
+      "name": "sensebox",
+      "maintainer": "senseBox",
+      "websiteURL": "http://www.sensebox.de",
+      "email": "info@sensebox.de",
+      "help": {
+        "online": "http://www.sensebox.de"
+      },
+      "platforms": [
+        {
+          "name": "senseBox SAMD Boards (dependency: Arduino SAMD Boards)",
+          "architecture": "samd",
+          "version": "999.999.999",
+          "category": "contributed",
+          "help": {
+            "online": "http://www.sensebox.de/go"
+          },
+          "url": "http://localhost/arduino/samd.zip",
+          "archiveFileName": "sensebox-samd-dev.zip",
+          "size": "1836508",
+          "checksum": "SHA-256:578ef1f6f69fac6961d8d5bf7d262ce3a59ffd4a84659e876876c0246a74f814",
+          "boards": [
+            {
+              "name": "senseBox MCU (SAMD21)"
+            }
+          ]
+        }
+      ],
+      "tools": []
+    }
+  ]
+}

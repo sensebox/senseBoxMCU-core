@@ -1,4 +1,4 @@
-name: Validate package dev index
+name: Validate development package index
 
 on:
   push:
@@ -9,9 +9,10 @@ on:
       - master
 
 jobs:
-  setup:
-    name: Setup test nginx
+  validate:
+    name: Validate development package index
     runs-on: ubuntu-20.04
+
     steps:
       - uses: actions/checkout@v2
 
@@ -24,14 +25,6 @@ jobs:
           sudo systemctl start nginx.service
           sudo systemctl status nginx.service
 
-  validate:
-    needs: setup
-    name: Validate package index
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v2
-
       - name: Install arduino-cli
         uses: giantswarm/install-binary-action@5972d5adf093d659091fa22c136a332453247b43
         with:
@@ -40,5 +33,5 @@ jobs:
           download_url: "https://github.com/arduino/${binary}/releases/download/${version}/${binary}_${version}_Linux_64bit.tar.gz"
           tarball_binary_path: "${binary}"
 
-      - name: "Try installing core sensebox:samd@${{ matrix.version }}"
+      - name: "Try installing development core sensebox:samd"
         run: arduino-cli --additional-urls "file://$(pwd)/package_sensebox-dev_index.json" core install sensebox:samd

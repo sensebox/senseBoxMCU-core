@@ -1,53 +1,25 @@
 "use strict";
 
-import { mkdirSync, writeFileSync } from "fs";
-import { execSync } from "child_process";
+const { mkdirSync, writeFileSync } = require("fs");
+const { execSync } = require("child_process");
 
-import SketchTemplater from "@sensebox/sketch-templater";
+const SketchTemplater = require("@sensebox/sketch-templater");
+
+const { getSensorsForModel } = require("./sensorLayouts");
 
 const sketchTemplater = new SketchTemplater("test.ingress.domain");
 
+const genId = (i) => `59479ed5a4ad5900112d8d${i.toString(16).padStart(2, "0")}`;
+
 const boxStub = function (model) {
   return {
-    _id: "59479ed5a4ad5900112d8dec",
+    _id: "59479ed5a4ad5900112d9d00",
     model: model,
-    sensors: [
-      {
-        title: "Temperatur",
-        _id: "59479ed5a4ad5900112d8ded",
-        sensorType: "HDC1080",
-      },
-      {
-        title: "rel. Luftfeuchte",
-        _id: "59479ed5a4ad5900112d8dee",
-        sensorType: "HDC1080",
-      },
-      {
-        title: "Luftdruck",
-        _id: "59479ed5a4ad5900112d8def",
-        sensorType: "BMP280",
-      },
-      {
-        title: "Beleuchtungsstärke",
-        _id: "59479ed5a4ad5900112d8df0",
-        sensorType: "TSL45315",
-      },
-      {
-        title: "UV-Intensität",
-        _id: "59479ed5a4ad5900112d8df1",
-        sensorType: "VEML6070",
-      },
-      {
-        title: "PM10",
-        _id: "59479ed5a4ad5900112d8df2",
-        sensorType: "SDS011",
-      },
-      {
-        title: "PM2.5",
-        _id: "59479ed5a4ad5900112d8df3",
-        sensorType: "SDS011",
-      },
-    ],
+    sensors: getSensorsForModel(model).map(({ title, sensorType }, index) => ({
+      title,
+      sensorType,
+      _id: genId(index),
+    })),
     serialPort: "Serial1",
     ssid: "MY-HOME-NETWORK",
     password: "MY-SUPER-PASSWORD",

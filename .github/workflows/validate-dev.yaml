@@ -17,11 +17,11 @@ jobs:
 
       - name: Copy arduino directory into /var/www/html
         run: |
-          cp -r arduino /var/www/html/
+          sudo cp -r arduino /var/www/html/
 
       - name: Start nginx service
         run: |
-          systemctl start nginx.service
+          sudo systemctl start nginx.service
 
   validate:
     needs: setup

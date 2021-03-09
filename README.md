@@ -1,4 +1,4 @@
-# senseBox MCU [![Build Status](https://travis-ci.org/sensebox/senseBoxMCU-core.svg?branch=master)](https://travis-ci.org/sensebox/senseBoxMCU-core)
+# senseBox MCU
 senseBox MCU is a Microchip SAMD21 based open-source board for sensors.
 
 ![senseBox MCU](https://github.com/watterott/senseBox-MCU/raw/master/hardware/senseBox-MCU_v12.jpg)

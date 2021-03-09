@@ -14,3 +14,32 @@ senseBox MCU is a Microchip SAMD21 based open-source board for sensors.
 * Open-Source
 * **[Documentation on learn.watterott.com](http://learn.watterott.com/sensebox/)**
 * This repository is based on [Watterott's Core Package](https://github.com/watterott/senseBox-MCU)
+
+## Development & Preparing a new release
+
+Please work in a separate branch and create a pull requests against the master branch!
+
+Each pull request is validated through checks in CI by trying to install the current dev package and compiling against known sensor and model configurations.
+
+### Development
+
+- Create a branch from master
+- Do you work, change, add or delete stuff.
+- Remember to update the `arduino/samd.zip` file.
+- After changing the `arduino/samd.zip` file, update the `size` and `checksum` properties in the `package_sensebox-dev_index.json`. (`stat -c "%s" arduino/samd.zip` and `shasum -a 256 arduino/samd.zip`)
+- Commit & push
+- If not already open, create a pull request
+
+### Preparing a new release
+
+Once you're satisfied with the current state of the master branch:
+
+- [Create a new release](https://github.com/sensebox/senseBoxMCU-core/releases/new)
+    - Attach the current `arduino/samd.zip`
+- Create a new branch
+    - Update the `package_sensebox_index.json`
+    - Prepend a new entry in the `packages.platforms` array
+    - Use the version and url from your release above
+    - Commit & push
+- Create a PR and merge into master
+- If everything was okay, no errors in CI should emerge

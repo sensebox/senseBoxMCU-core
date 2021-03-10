@@ -56,6 +56,9 @@ int ECCX08Class::begin()
 
 void ECCX08Class::end()
 {
+  // First wake up the device otherwise the chip didn't react to a sleep commando
+  wakeup();
+  sleep();
 #ifdef WIRE_HAS_END
   _wire->end();
 #endif
@@ -148,7 +151,7 @@ int ECCX08Class::random(byte data[], size_t length)
       return 0;
     }
 
-    int copyLength = min(32, length);
+    int copyLength = min(32, (int)length);
     memcpy(data, response, copyLength);
 
     length -= copyLength;
@@ -574,7 +577,7 @@ int ECCX08Class::sign(int slot, byte signature[])
     return 0;
   }
 
-  delay(60);
+  delay(70);
 
   if (!receiveResponse(signature, 64)) {
     return 0;
@@ -771,5 +774,8 @@ uint16_t ECCX08Class::crc16(const byte data[], size_t length)
   return crc;
 }
 
-//ECCX08Class ECCX08(Wire, 0x60);
-ECCX08Class ECCX08(Wire1, 0x60);
+#ifdef CRYPTO_WIRE
+ECCX08Class ECCX08(CRYPTO_WIRE, 0x60);
+#else
+ECCX08Class ECCX08(Wire, 0x60);
+#endif

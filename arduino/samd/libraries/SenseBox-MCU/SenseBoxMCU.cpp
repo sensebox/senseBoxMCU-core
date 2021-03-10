@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2020/03/04 15:03:53
+ * last Modified: 2021/03/09 15:01:23
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -478,6 +478,116 @@ double VEML6070::getUvIntensity()
 	return (double)(uv) * (5.625);
 }
 
+byte read_reg(byte address, uint8_t reg)
+{
+	byte i;
+	Wire.beginTransmission(address);
+	Wire.write(reg);
+	int error = Wire.endTransmission();
+	if (error == 0)
+	{
+		Wire.requestFrom(address, 1, true);
+		//delay(1);
+		if (Wire.available())
+			i = Wire.read();
+	}
+	return i;
+}
+
+void write_reg(byte address, uint8_t reg, uint8_t val)
+{
+	Wire.beginTransmission(address);
+	Wire.write(reg);
+	Wire.write(val);
+	Wire.endTransmission();
+}
+
+void Lightsensor::begin()
+{
+	Wire.begin();
+	unsigned int u = 0;
+	Serial.println("Checking sensortype");
+	u = read_reg(LIGHTSENSOR_ADDR, 0x80 | 0x0A); //id register
+	if ((u & 0xF0) == 0xA0)						 // TSL45315
+	{
+		Serial.println("TSL45315");
+		write_reg(LIGHTSENSOR_ADDR, 0x80 | 0x00, 0x03); //control: power on
+		write_reg(LIGHTSENSOR_ADDR, 0x80 | 0x01, 0x02); //config: M=4 T=100ms
+		delay(120);
+		sensortype = 0; //TSL45315
+	}
+	else
+	{
+		Serial.println("LTR329");
+		delay(100);											 //Wait 100 ms (min) - initial startup time for LTR
+		write_reg(LIGHTSENSOR_ADDR, LTR329_ALS_CONTR, 0x01); //power on with default settings
+		delay(10);											 //Wait 10 ms (max) - wakeup time from standby
+		sensortype = 1;										 //
+	}
+}
+
+unsigned long Lightsensor::getIlluminance()
+{
+	unsigned int u = 0, v = 0;
+	unsigned long lux = 0;
+	if (sensortype == 0) // TSL45315
+	{
+		u = (read_reg(LIGHTSENSOR_ADDR, 0x80 | 0x04) << 0);	 //data low
+		u |= (read_reg(LIGHTSENSOR_ADDR, 0x80 | 0x05) << 8); //data high
+		lux = u * 4;										 // calc lux with M=4 and T=100ms
+		return (unsigned long)(lux);
+	}
+	else if (sensortype == 1) //LTR-329ALS-01
+	{
+		unsigned int u = 0;
+
+		//The ALS ADC channel-1 and channel-0 data are expressed as a 16-bit data spread over two registers.
+		//The ALS_DATA_CH_0 and ALS_DATA_CH_1 registers provide the lower and upper byte respectively.
+		byte lower, upper;
+		unsigned int ch0, ch1;
+
+		do
+		{
+			delay(10);
+			u = read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_STATUS);
+		} while (u & 0x80); //wait for data ready
+
+		//ALS_DATA registers should be read as a group, with the lower address read back first (i.e. read 0x88 first, then read 0x89).
+		//These two registers should also be read before reading channel-0 data
+		lower = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH1_0));
+		upper = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH1_1));
+		ch1 = word(upper, lower);
+
+		//ALS_DATA_CH0 Registers (0x8A / 0x8B) should be read after reading channel-1 data
+		//Lower address register should be read first (i.e read 0x8A first, then read 0x8B).
+		lower = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH0_0));
+		upper = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH0_1));
+		ch0 = word(upper, lower);
+
+		double ratio, lux = 0.0;
+		ratio = double(ch1) / (ch0 + ch1);
+
+		if (ratio < 0.45) // calculation done with pfactor = 1, gain = 1, T=100ms
+		{
+			lux = (1.7743 * ch0 + 1.1059 * ch1);
+		}
+		else if (ratio < 0.64 && ratio >= 0.45)
+		{
+			lux = (4.2785 * ch0 - 1.9548 * ch1);
+		}
+		else if (ratio < 0.85 && ratio >= 0.64)
+		{
+			lux = (0.5926 * ch0 + 0.1185 * ch1);
+		}
+		else
+		{
+			lux = 0;
+		}
+
+		return (unsigned long)(lux);
+	}
+}
+
 uint8_t TSL45315::begin()
 {
 	Wire.begin();
@@ -885,7 +995,7 @@ long Ultrasonic::getDistance(void)
 	digitalWrite(_rx, LOW);
 	delayMicroseconds(2);
 	digitalWrite(_rx, HIGH);
-	delayMicroseconds(5);
+	delayMicroseconds(10);
 	digitalWrite(_rx, LOW);
 	pinMode(_tx, INPUT);
 	long duration;

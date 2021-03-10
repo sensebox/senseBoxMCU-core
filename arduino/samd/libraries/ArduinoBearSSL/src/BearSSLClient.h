@@ -25,6 +25,14 @@
 #ifndef _BEAR_SSL_CLIENT_H_
 #define _BEAR_SSL_CLIENT_H_
 
+#ifndef BEAR_SSL_CLIENT_OBUF_SIZE
+#define BEAR_SSL_CLIENT_OBUF_SIZE 512 + 85
+#endif
+
+#ifndef BEAR_SSL_CLIENT_IBUF_SIZE
+#define BEAR_SSL_CLIENT_IBUF_SIZE 8192 + 85 + 325 - BEAR_SSL_CLIENT_OBUF_SIZE
+#endif
+
 #include <Arduino.h>
 #include <Client.h>
 
@@ -34,7 +42,13 @@ class BearSSLClient : public Client {
 
 public:
   BearSSLClient(Client& client);
+  BearSSLClient(Client& client, const br_x509_trust_anchor* myTAs, int myNumTAs);
+  BearSSLClient(Client* client, const br_x509_trust_anchor* myTAs, int myNumTAs);
   virtual ~BearSSLClient();
+
+
+  inline void setClient(Client& client) { _client = &client; }
+
 
   virtual int connect(IPAddress ip, uint16_t port);
   virtual int connect(const char* host, uint16_t port);
@@ -51,8 +65,21 @@ public:
 
   using Print::write;
 
+  enum class SNI {
+    Insecure
+  };
+
+  void setInsecure(SNI insecure) __attribute__((deprecated("INSECURE. DO NOT USE IN PRODUCTION")));
+
+  void setEccVrfy(br_ecdsa_vrfy vrfy);
+  void setEccSign(br_ecdsa_sign sign);
+
+  void setEccCert(br_x509_certificate cert);
+
   void setEccSlot(int ecc508KeySlot, const byte cert[], int certLength);
   void setEccSlot(int ecc508KeySlot, const char cert[]);
+
+  int errorCode();
 
 private:
   int connectSSL(const char* host);
@@ -61,14 +88,23 @@ private:
   static void clientAppendCert(void *ctx, const void *data, size_t len);
 
 private:
-  Client* _client;  
+  Client* _client;
+  const br_x509_trust_anchor* _TAs;
+  int _numTAs;
+
+  bool _noSNI;
+
+  br_ecdsa_vrfy _ecVrfy;
+  br_ecdsa_sign _ecSign;
+
   br_ec_private_key _ecKey;
   br_x509_certificate _ecCert;
   bool _ecCertDynamic;
 
   br_ssl_client_context _sc;
   br_x509_minimal_context _xc;
-  unsigned char _iobuf[8192 + 85 + 325];
+  unsigned char _ibuf[BEAR_SSL_CLIENT_IBUF_SIZE];
+  unsigned char _obuf[BEAR_SSL_CLIENT_OBUF_SIZE];
   br_sslio_context _ioc;
 };
 

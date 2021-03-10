@@ -29,7 +29,7 @@
 #endif
 
 #if !defined(_TIME_H_) && !defined(TIME_H)
-// another library overrided the time.h header
+// another library overrode the time.h header
 #define WIFI_101_NO_TIME_H
 #endif
 
@@ -314,7 +314,7 @@ int WiFiClass::init()
 
 	if (nmdrv_firm_ver >= M2M_MAKE_VERSION(19, 5, 0)) {
 		// enable AES-128 and AES-256 Ciphers, if firmware is 19.5.0 or higher
-		m2m_ssl_set_active_ciphersuites(SSL_NON_ECC_CIPHERS_AES_128 | SSL_NON_ECC_CIPHERS_AES_256);
+		m2m_ssl_set_active_ciphersuites(SSL_CIPHER_RSA_WITH_AES_128_CBC_SHA | SSL_CIPHER_RSA_WITH_AES_128_CBC_SHA256 | SSL_CIPHER_RSA_WITH_AES_128_GCM_SHA256 | SSL_CIPHER_RSA_WITH_AES_256_CBC_SHA | SSL_CIPHER_RSA_WITH_AES_256_CBC_SHA256);
 	}
 
 #ifdef CONF_PERIPH
@@ -506,7 +506,7 @@ uint8_t WiFiClass::startAP(const char *ssid, uint8_t u8SecType, const void *pvAu
 	}
 
 	if (channel == 0) {
-		channel = 1; // channel 1 is the minium channel
+		channel = 1; // channel 1 is the minimum channel
 	}
 
 	// Enter Access Point mode:

@@ -15,6 +15,45 @@ senseBox MCU is a Microchip SAMD21 based open-source board for sensors.
 * **[Documentation on learn.watterott.com](http://learn.watterott.com/sensebox/)**
 * This repository is based on [Watterott's Core Package](https://github.com/watterott/senseBox-MCU)
 
+## Library Versions
+
+The senseBox MCU Core V.1.4.0 includes the following libraries:
+
+| Name | Version | Link 
+| -------- | -------- | -------- 
+| senseBox MCU Lib | 1.4.0 | https://github.com/sensebox/SenseBoxMCU-Lib  
+| Sparkfun SCD 30 Library | 1.0.12 | https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library 
+| Adafruit GFX Library | 1.2.3 | https://github.com/adafruit/Adafruit-GFX-Library 
+| Adafruit BME280 Library | 2.1.2 | https://github.com/adafruit/Adafruit_BME280_Library 
+| Adafruit BMP280 Library | 2.1.0 | https://github.com/adafruit/Adafruit_BMP280_Library 
+| Adafruit BME680 Library | 1.1.1 | https://github.com/adafruit/Adafruit_BME680 
+| Adafruit_BMP3XX | 2.0.1 | https://github.com/adafruit/Adafruit_BMP3XX 
+| Adafruit HDC1000 | 2.0.0 | https://github.com/adafruit/Adafruit_HDC1000_Library 
+| Adafruit BusIO | 1.7.1 | https://github.com/adafruit/Adafruit_BusIO 
+| Adafruit NeoPixel Library | 1.0.6 | https://github.com/adafruit/Adafruit_NeoPixel
+| Adafruit_SSD1306 | 1.1.2 | https://github.com/adafruit/Adafruit_SSD1306 
+| Adafruit Unified Sensor Driver | 1.0.2 | https://github.com/adafruit/Adafruit_Sensor 
+| Arduino Library for Maxim Temperature | 3.8.0 | https://github.com/milesburton/Arduino-Temperature-Control-Library
+| ArduinoBearSSL | 1.5.0 | https://github.com/arduino-libraries/ArduinoBearSSL 
+| ArduinoECCX08 | 1.3.4 | https://github.com/arduino-libraries/ArduinoECCX08 
+| Ethernet Library | 2.0.0 | http://www.arduino.cc/en/Reference/Ethernet
+| FlashStorage library | 0.7.1 | https://github.com/cmaglie/FlashStorage
+| HDC100X | 
+| Arduino-LMIC library | 1.5.1 | https://github.com/matthijskooijman/arduino-lmic 
+| LoRaMessage | 3.0.1 | https://github.com/thesolarnomad/lora-serialization 
+| Makerblog_TSL45315 | 
+| OneWire | 2.3.4 | http://www.pjrc.com/teensy/td_libs_OneWire.html
+| RV8523 | 1.0.0 | https://github.com/watterott/Arduino-Libs/tree/master/RV8523 | 
+| SDS011 library selectable | 0.0.6 | https://github.com/sensebox/SDS011-select-serial  
+| SSD1306-Plot-Library | 1.0.0 | https://github.com/Lucas-Steinmann/SSD1306-Plot-Library
+| SenseBoxOTA | 1.0.0 | https://github.com/sensebox/senseBoxMCU-core
+| TinyGPSPlus | 1.0.0 | https://github.com/mikalhart/TinyGPSPlus
+| VEML6070 | 0.0.1 | 
+| WiFi101 | 0.16.1 | http://www.arduino.cc/en/Reference/WiFi101
+| senseBox | 1.0.0 | 
+| senseBoxIO | 1.0.0|
+
+
 ## Development & Preparing a new release
 
 Please work in a separate branch and create a pull requests against the master branch!

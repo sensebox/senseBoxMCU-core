@@ -19,8 +19,8 @@
           },
           "url": "http://localhost/arduino/samd.zip",
           "archiveFileName": "sensebox-samd-dev.zip",
-          "size": "2402095",
-          "checksum": "SHA-256:7c6750e7ccaf15b1b93f23310d2a01f02bc358d6c4ae0afed31af93aef01a7a0",
+          "size": "1892611",
+          "checksum": "SHA-256:a639872792bdbc929fc3c65ccad24f84faa94ac808c684a545a618c90eda7ef6",
           "boards": [
             {
               "name": "senseBox MCU (SAMD21)"

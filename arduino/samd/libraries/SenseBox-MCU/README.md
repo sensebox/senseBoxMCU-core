@@ -83,6 +83,20 @@ functions public:
 			double getUvIntensity(void);
 ```
 
+### Lightsensor (support TSL45315/LTR329 and detect automatically)
+
+```Arduino 
+Classname: Lightsensor
+
+public:
+	void begin();
+	unsigned long getIlluminance(void);
+
+private:
+	int sensortype = 0; // 0 for tsl | - 1 for liteon sensor
+};
+```
+
 ### TSL45315
 ```Arduino 
 Classname: TSL45315

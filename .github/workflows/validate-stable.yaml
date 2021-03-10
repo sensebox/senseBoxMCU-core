@@ -1,0 +1,42 @@
+name: Validate stable package index
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  setup:
+    name: Setup test matrix
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract all versions
+        id: set-matrix
+        run: |
+          echo "::set-output name=matrix::$(jq -crM '[.packages[0] | .platforms[] | .version ]' package_sensebox_index.json)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  validate:
+    needs: setup
+    name: Validate stable package index
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        version: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install arduino-cli
+        uses: giantswarm/install-binary-action@5972d5adf093d659091fa22c136a332453247b43
+        with:
+          binary: "arduino-cli"
+          version: "0.16.1"
+          download_url: "https://github.com/arduino/${binary}/releases/download/${version}/${binary}_${version}_Linux_64bit.tar.gz"
+          tarball_binary_path: "${binary}"
+
+      - name: "Try installing core sensebox:samd@${{ matrix.version }}"
+        run: arduino-cli --additional-urls "file://$(pwd)/package_sensebox_index.json" core install "sensebox:samd@${{ matrix.version }}"

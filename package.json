@@ -4,7 +4,8 @@
   "description": "senseBox MCU board support package",
   "main": "./arduino-test/build-sketches.js",
   "scripts": {
-    "test": "node arduino-test/build-sketches.js"
+    "test": "node arduino-test/build-sketches.js",
+    "postinstall": "bash arduino-test/postinstall.sh"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,14 @@
   "homepage": "https://github.com/sensebox/senseBoxMCU-core#readme",
   "dependencies": {},
   "devDependencies": {
-    "@sensebox/sketch-templater": "^1.4.0"
+    "@sensebox/sketch-templater": "^1.10.2"
+  },
+  "peerDependencies": {
+    "@sensebox/opensensemap-api-models": "^0.0.28"
+  },
+  "peerDependenciesMeta": {
+    "@sensebox/opensensemap-api-models": {
+      "optional": true
+    }
   }
 }

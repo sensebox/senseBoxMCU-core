@@ -28,6 +28,14 @@
 
 #define VEML6070_INTEGRATION_TIME_1 0x01 //IT_1: 5.625 uW/cm2/step
 
+#define LIGHTSENSOR_ADDR 0x29
+#define LTR329_ALS_CONTR 0x80
+#define LTR329_ALS_STATUS 0x8C
+#define LTR329_ALS_DATA_CH1_0 0x88
+#define LTR329_ALS_DATA_CH1_1 0x89
+#define LTR329_ALS_DATA_CH0_0 0x8A
+#define LTR329_ALS_DATA_CH0_1 0x8B
+
 class Bee
 {
 public:
@@ -92,6 +100,16 @@ class VEML6070
 public:
 	uint8_t begin(void);
 	double getUvIntensity(void);
+};
+
+class Lightsensor
+{
+public:
+	void begin();
+	unsigned long getIlluminance(void);
+
+private:
+	int sensortype = 0; //0 for tsl - 1 for liteon sensor
 };
 
 class TSL45315

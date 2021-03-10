@@ -46,13 +46,14 @@ jobs:
       - name: Cache arduino-dir
         uses: actions/cache@v2
         env:
-          cache-name: cache-arduino-dir
+          cache-name: arduino-dir
         with:
           path: |
-            ~/.arduino15
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
+            ~/.arduino15/packages/builtin
+            ~/.arduino15/packages/arduino
+          key: ${{ runner.os }}-cache-${{ env.cache-name }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-cache-
             ${{ runner.os }}-
 
       - name: Install arduino-cli

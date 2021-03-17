@@ -60,7 +60,7 @@ jobs:
         uses: giantswarm/install-binary-action@5972d5adf093d659091fa22c136a332453247b43
         with:
           binary: "arduino-cli"
-          version: "0.16.1"
+          version: "0.17.0"
           download_url: "https://github.com/arduino/${binary}/releases/download/${version}/${binary}_${version}_Linux_64bit.tar.gz"
           tarball_binary_path: "${binary}"
 

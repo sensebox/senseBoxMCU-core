@@ -49,6 +49,7 @@ The senseBox MCU Core V.1.4.0 includes the following libraries:
 | SenseBoxOTA | 1.0.0 | https://github.com/sensebox/senseBoxMCU-core
 | TinyGPSPlus | 1.0.0 | https://github.com/mikalhart/TinyGPSPlus
 | VEML6070 | 0.0.1 | 
+| LTR329 (based on LTR303 lib) | 0.1.0 | https://github.com/automote/LTR303
 | WiFi101 | 0.16.1 | http://www.arduino.cc/en/Reference/WiFi101
 | senseBox | 1.0.0 | 
 | senseBoxIO | 1.0.0|

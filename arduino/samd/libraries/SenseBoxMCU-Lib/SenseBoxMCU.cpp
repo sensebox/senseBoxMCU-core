@@ -1,7 +1,7 @@
 /*SenseBoxMCU.cpp
  * Library for easy usage of senseBox MCU
  * Created: 2018/04/10
- * last Modified: 2021/03/09 15:01:23
+ * last Modified: 2021/05/07 12:09:31
  * senseBox @ Institute for Geoinformatics WWU Münster
  */
 
@@ -519,17 +519,36 @@ void Lightsensor::begin()
 	else
 	{
 		Serial.println("LTR329");
-		delay(100);											 //Wait 100 ms (min) - initial startup time for LTR
+		delay(100);
+		//set measurement rate and integration time below
+		byte integrationTime = 0x01;
+		byte measurementRate = 0x03;
+		byte measurement = 0x00;
+
+		// Perform sanity checks
+		if (integrationTime >= 0x07)
+		{
+			integrationTime = 0x00;
+		}
+		if (measurementRate >= 0x07)
+		{
+			measurementRate = 0x00;
+		}
+		measurement |= integrationTime << 3;
+		measurement |= measurementRate;
+		write_reg(LIGHTSENSOR_ADDR, LTR329_MEAS_RATE, measurement);
 		write_reg(LIGHTSENSOR_ADDR, LTR329_ALS_CONTR, 0x01); //power on with default settings
 		delay(10);											 //Wait 10 ms (max) - wakeup time from standby
 		sensortype = 1;										 //
 	}
 }
 
-unsigned long Lightsensor::getIlluminance()
+unsigned int Lightsensor::getIlluminance()
 {
 	unsigned int u = 0, v = 0;
-	unsigned long lux = 0;
+	unsigned int lux = 0;
+	unsigned int CH0, CH1;
+	byte error;
 	if (sensortype == 0) // TSL45315
 	{
 		u = (read_reg(LIGHTSENSOR_ADDR, 0x80 | 0x04) << 0);	 //data low
@@ -539,53 +558,87 @@ unsigned long Lightsensor::getIlluminance()
 	}
 	else if (sensortype == 1) //LTR-329ALS-01
 	{
-		unsigned int u = 0;
+		byte high, low;
 
-		//The ALS ADC channel-1 and channel-0 data are expressed as a 16-bit data spread over two registers.
-		//The ALS_DATA_CH_0 and ALS_DATA_CH_1 registers provide the lower and upper byte respectively.
-		byte lower, upper;
-		unsigned int ch0, ch1;
+		// Check if sensor present for read
+		Wire.beginTransmission(LIGHTSENSOR_ADDR);
+		Wire.write(LTR329_DATA_CH0_0);
+		error = Wire.endTransmission();
 
-		do
+		// Read two bytes (low and high) -> CH0 data
+		if (error == 0)
 		{
-			delay(10);
-			u = read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_STATUS);
-		} while (u & 0x80); //wait for data ready
-
-		//ALS_DATA registers should be read as a group, with the lower address read back first (i.e. read 0x88 first, then read 0x89).
-		//These two registers should also be read before reading channel-0 data
-		lower = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH1_0));
-		upper = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH1_1));
-		ch1 = word(upper, lower);
-
-		//ALS_DATA_CH0 Registers (0x8A / 0x8B) should be read after reading channel-1 data
-		//Lower address register should be read first (i.e read 0x8A first, then read 0x8B).
-		lower = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH0_0));
-		upper = (read_reg(LIGHTSENSOR_ADDR, LTR329_ALS_DATA_CH0_1));
-		ch0 = word(upper, lower);
-
-		double ratio, lux = 0.0;
-		ratio = double(ch1) / (ch0 + ch1);
-
-		if (ratio < 0.45) // calculation done with pfactor = 1, gain = 1, T=100ms
-		{
-			lux = (1.7743 * ch0 + 1.1059 * ch1);
-		}
-		else if (ratio < 0.64 && ratio >= 0.45)
-		{
-			lux = (4.2785 * ch0 - 1.9548 * ch1);
-		}
-		else if (ratio < 0.85 && ratio >= 0.64)
-		{
-			lux = (0.5926 * ch0 + 0.1185 * ch1);
+			Wire.requestFrom(LIGHTSENSOR_ADDR, 2);
+			if (Wire.available() == 2)
+			{
+				low = Wire.read();
+				high = Wire.read();
+				// Combine bytes into unsigned int
+				CH0 = word(high, low);
+			}
 		}
 		else
+			return -1;
+
+		// Check if sensor present for read
+		Wire.beginTransmission(LIGHTSENSOR_ADDR);
+		Wire.write(LTR329_DATA_CH1_0);
+		byte error = Wire.endTransmission();
+
+		// Read two bytes (low and high) -> CH1 data
+		if (error == 0)
 		{
-			lux = 0;
+			Wire.requestFrom(LIGHTSENSOR_ADDR, 2);
+			if (Wire.available() == 2)
+			{
+				low = Wire.read();
+				high = Wire.read();
+				// Combine bytes into unsigned int
+				CH1 = word(high, low);
+			}
+		}
+		else
+			return -1;
+		byte integrationTime = 0x01;
+		byte gain = 0x00;
+		double ratio, d0, d1;
+		uint ALS_GAIN[8] = {1, 2, 4, 8, 1, 1, 48, 96};
+		float ALS_INT[8] = {1.0, 0.5, 2.0, 4.0, 1.5, 2.5, 3.0, 3.5};
+		// Determine if either sensor saturated (0xFFFF)
+		// If so, abandon ship (calculation will not be accurate)
+		if ((CH0 == 0xFFFF) || (CH1 == 0xFFFF))
+		{
+			lux = 0.0;
+			return lux;
 		}
 
-		return (unsigned long)(lux);
+		// Convert from unsigned integer to floating point
+		d0 = CH0;
+		d1 = CH1;
+
+		// We will need the ratio for subsequent calculations
+		ratio = d1 / (d0 + d1);
+
+		// Determine lux per datasheet equations:
+		if (ratio < 0.45)
+		{
+			lux = ((1.7743 * d0) + (1.1059 * d1)) / ALS_GAIN[gain] / ALS_INT[integrationTime];
+		}
+
+		else if (ratio < 0.64)
+		{
+			lux = ((4.2785 * d0) - (1.9548 * d1)) / ALS_GAIN[gain] / ALS_INT[integrationTime];
+		}
+
+		else if (ratio < 0.85)
+		{
+			lux = ((0.5926 * d0) + (0.1185 * d1)) / ALS_GAIN[gain] / ALS_INT[integrationTime];
+		}
+
+		else
+			lux = 0;
 	}
+	return lux;
 }
 
 uint8_t TSL45315::begin()

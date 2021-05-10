@@ -21,7 +21,7 @@ The senseBox MCU Core V.1.4.0 includes the following libraries:
 
 | Name | Version | Link 
 | -------- | -------- | -------- 
-| senseBox MCU Lib | 1.4.0 | https://github.com/sensebox/SenseBoxMCU-Lib  
+| senseBox MCU Lib | 1.4.1 | https://github.com/sensebox/SenseBoxMCU-Lib  
 | Sparkfun SCD 30 Library | 1.0.12 | https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library 
 | Adafruit GFX Library | 1.2.3 | https://github.com/adafruit/Adafruit-GFX-Library 
 | Adafruit BME280 Library | 2.1.2 | https://github.com/adafruit/Adafruit_BME280_Library 

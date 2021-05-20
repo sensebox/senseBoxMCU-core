@@ -1,0 +1,4 @@
+#ignore vscode
+/.vscode
+#ignore .DS
+.DS_Store

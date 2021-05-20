@@ -4,7 +4,7 @@ This Library is for the [senseBox with MCU](https://sensebox.kaufen/product/sens
 
 - Temperature and Humidity [Sensor HDC1080](https://sensebox.kaufen/product/temperatur-luftfeuchte)
 - Airpressure and Temperature Sensor [BMP280](https://sensebox.kaufen/product/luftdruck-temperatur)
-- Light Visible + UV [TSL45315 and VEML6070](https://sensebox.kaufen/product/licht-sensor)
+- Light Visible + UV [TSL45315/LTR329 and VEML6070](https://sensebox.kaufen/product/licht-sensor)
 - Ultrasonic Sensor [HC SR04]
 - SDS011 Fine Particular Sensor [SDS011](https://sensebox.kaufen/product/feinstaub-sds011)
 - senseBox GPS connected via I2C [CAM-M8Q](https://sensebox.kaufen/product/gps) --> need [TinyGPSPlus](https://github.com/mikalhart/TinyGPSPlus)
@@ -90,11 +90,11 @@ Classname: Lightsensor
 
 public:
 	void begin();
-	unsigned long getIlluminance(void);
+	unsigned int getIlluminance(void);
 
 private:
 	int sensortype = 0; // 0 for tsl | - 1 for liteon sensor
-};
+;
 ```
 
 ### TSL45315

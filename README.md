@@ -21,7 +21,7 @@ The senseBox MCU Core V.1.4.0 includes the following libraries:
 
 | Name | Version | Link 
 | -------- | -------- | -------- 
-| senseBox MCU Lib | 1.4.0 | https://github.com/sensebox/SenseBoxMCU-Lib  
+| senseBox MCU Lib | 1.4.1 | https://github.com/sensebox/SenseBoxMCU-Lib  
 | Sparkfun SCD 30 Library | 1.0.12 | https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library 
 | Adafruit GFX Library | 1.2.3 | https://github.com/adafruit/Adafruit-GFX-Library 
 | Adafruit BME280 Library | 2.1.2 | https://github.com/adafruit/Adafruit_BME280_Library 
@@ -49,6 +49,7 @@ The senseBox MCU Core V.1.4.0 includes the following libraries:
 | SenseBoxOTA | 1.0.0 | https://github.com/sensebox/senseBoxMCU-core
 | TinyGPSPlus | 1.0.0 | https://github.com/mikalhart/TinyGPSPlus
 | VEML6070 | 0.0.1 | 
+| LTR329 (based on LTR303 lib) | 0.1.0 | https://github.com/automote/LTR303
 | WiFi101 | 0.16.1 | http://www.arduino.cc/en/Reference/WiFi101
 | senseBox | 1.0.0 | 
 | senseBoxIO | 1.0.0|

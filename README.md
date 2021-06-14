@@ -65,8 +65,8 @@ Each pull request is validated through checks in CI by trying to install the cur
 
 - Create a branch from master
 - Do you work, change, add or delete stuff.
-- Remember to update the `arduino/samd.zip` file.
-- After changing the `arduino/samd.zip` file, update the `size` and `checksum` properties in the `package_sensebox-dev_index.json`. (`stat -c "%s" arduino/samd.zip` and `shasum -a 256 arduino/samd.zip`)
+- Remember to update the `arduino/samd.zip` file. `zip -r -X samd.zip samd `
+- After changing the `arduino/samd.zip` file, update the `size` and `checksum` properties in the `package_sensebox-dev_index.json`. (`stat -c "%s" arduino/samd.zip` or `stat -f "%z" samd.zip` and `shasum -a 256 arduino/samd.zip`)
 - Commit & push
 - If not already open, create a pull request
 

@@ -17,7 +17,7 @@
           "help": {
             "online": "http://www.sensebox.de/go"
           },
-          "url": "https://github.com/sensebox/senseBoxMCU-core/releases/download/1.4.1/samd.zip",
+          "url": "https://github.com/sensebox/senseBoxMCU-core/releases/download/1.4.2/samd.zip",
           "archiveFileName": "sensebox-samd-1.4.2.zip",
           "size": "1886818",
           "checksum": "SHA-256:91a4340bb453cae2069b9c7540bb82e7f0b0479a25a4a13030097d805c11a4ae",

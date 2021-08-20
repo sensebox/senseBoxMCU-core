@@ -1,0 +1,34 @@
+name: Check Watterott senseBox MCU Core for updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *'  # Check every day
+
+jobs:
+  check-for-updates:
+    name: Check for new commits
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: 'watterott/senseBox-MCU'
+          ref: 'master'
+
+      - name: Check for new commits
+        id: check_commits
+        run: |
+          echo "Checking git log"
+          commits=false
+          git shortlog -s --after="yesterday" --before="today" > commits.txt
+          if [[ $(wc -l <commits.txt) -ge 1 ]]
+          then
+            echo "[set-output name=commits;true]"
+          fi
+          echo $commits
+
+      - uses: JasonEtco/create-an-issue@v2
+        if: ${{ steps.check_commits.outputs.commits }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

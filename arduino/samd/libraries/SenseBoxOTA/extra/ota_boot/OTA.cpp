@@ -4,9 +4,10 @@
 #include <Arduino.h>
 #include <FlashStorage.h>
 
-OTA::OTA(): server(80), status(WL_IDLE_STATUS) {}
+OTA::OTA() : server(80), status(WL_IDLE_STATUS) {}
 
-void OTA::begin(bool accessPointMode) {
+void OTA::begin(bool accessPointMode)
+{
   // switch modes: also allow no access point (for use with just webserver in an existing network)
   if (accessPointMode)
     createAccessPoint();
@@ -14,15 +15,19 @@ void OTA::begin(bool accessPointMode) {
   server.begin(); // start the web server on port 80
 }
 
-void OTA::update() {
+void OTA::update()
+{
   pollWifiState();
   pollWebserver();
 }
 
-void OTA::createAccessPoint() {
-  if (WiFi.status() == WL_NO_SHIELD) {
+void OTA::createAccessPoint()
+{
+  if (WiFi.status() == WL_NO_SHIELD)
+  {
     Serial.println("WiFi shield not present");
-    while (true);
+    while (true)
+      ;
   }
   // Assign mac address to byte array & push it to a char array
   WiFi.macAddress(mac);
@@ -30,31 +35,37 @@ void OTA::createAccessPoint() {
   mac_str.toUpperCase();
   String ssid_string = String("senseBox:" + mac_str);
   char ssid[20];
-  ssid_string.toCharArray(ssid,20);
+  ssid_string.toCharArray(ssid, 20);
 
   LOG.print("Creating access point named: ");
   LOG.println(ssid);
 
   // initialize wifi: set SSID based on last 4 bytes of MAC address
   status = WiFi.beginAP(ssid);
-  if (status != WL_AP_LISTENING) {
+  if (status != WL_AP_LISTENING)
+  {
     LOG.println("Creating access point failed");
-    while (true);
+    while (true)
+      ;
   }
 
   pinMode(LED_BUILTIN2, OUTPUT);
-
 }
 
-void OTA::pollWifiState() {
+void OTA::pollWifiState()
+{
   // blink faster if a device is connected to the access point
-  if (status != WiFi.status()) {
+  if (status != WiFi.status())
+  {
     status = WiFi.status();
 
-    if (status == WL_AP_CONNECTED) {
+    if (status == WL_AP_CONNECTED)
+    {
       LOG.println("device connected to AP");
       led_interval = 900;
-    } else {
+    }
+    else
+    {
       // a device has disconnected from the AP, and we are back in listening mode
       LOG.println("Device disconnected from AP");
       led_interval = 2000;
@@ -63,7 +74,8 @@ void OTA::pollWifiState() {
 
   // LED blink logic
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= led_interval) {
+  if (currentMillis - previousMillis >= led_interval)
+  {
     if (ledState == HIGH)
       ledState = LOW;
     else
@@ -74,10 +86,12 @@ void OTA::pollWifiState() {
   }
 }
 
-void OTA::pollWebserver() {
+void OTA::pollWebserver()
+{
   // listen for incoming clients
   WiFiClient client = server.available();
-  if (!client) return;
+  if (!client)
+    return;
 
   LOG.println("new connection");
 
@@ -85,8 +99,10 @@ void OTA::pollWebserver() {
   bool currentLineIsBlank = true;
   String req_str = "";
 
-  while (client.connected()) {
-    if (!client.available()) continue;
+  while (client.connected())
+  {
+    if (!client.available())
+      continue;
 
     char c = client.read();
     req_str += c;
@@ -96,7 +112,8 @@ void OTA::pollWebserver() {
     // so you can send a reply
 
     // POST request also needs to handle self update
-    if (c == '\n' && currentLineIsBlank && req_str.startsWith("POST")) {
+    if (c == '\n' && currentLineIsBlank && req_str.startsWith("POST"))
+    {
       // handlers in here must consume the rest of the body
       if (req_str.startsWith("POST /sketch "))
         flashSuccess = handlePostSketch(client, req_str);
@@ -115,7 +132,8 @@ void OTA::pollWebserver() {
   client.stop();
   LOG.println("client disconnected");
 
-  if (flashSuccess) {
+  if (flashSuccess)
+  {
     // Reset system to load the flashed sketch
     stopHardware();
     NVIC_SystemReset();
@@ -127,10 +145,12 @@ void OTA::pollWebserver() {
  * NOTE FIXME TODO: this does not do any verification on the received data
  * but blindly writes it to flash!
  */
-bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
+bool OTA::handlePostSketch(WiFiClient &client, String &req_str)
+{
   // extract length of body
   int contentLengthPos = req_str.indexOf("Content-Length:");
-  if (contentLengthPos <= 0) {
+  if (contentLengthPos <= 0)
+  {
     LOG.println("Content-Length is missing, ignoring request");
     return false;
   }
@@ -139,11 +159,12 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   uint32_t contentLength = tmp.toInt();
   LOG.println(contentLength);
 
-  if (contentLength <= OTA_SIZE) {
-    LOG.println("update is too small, ignoring");
-    return false;
-  }
-  if (contentLength > (FLASH_SIZE - 0x2000)) {
+  // if (contentLength <= OTA_SIZE) {
+  //   LOG.println("update is too small, ignoring");
+  //   return false;
+  // }
+  if (contentLength > (FLASH_SIZE - 0x2000))
+  {
     LOG.println("update is too large, ignoring");
     return false;
   }
@@ -152,8 +173,10 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   // the new sketch needs to still include this section in order for internal memory adresses to
   // be compiled correctly (unconfirmed, but it didn't work withou)
   uint32_t updateSize = contentLength - OTA_SIZE;
-  while (updateSize < contentLength) {
-    if (!client.available()) continue;
+  while (updateSize < contentLength)
+  {
+    if (!client.available())
+      continue;
     contentLength--;
     char c = client.read();
     req_str += c;
@@ -164,43 +187,49 @@ bool OTA::handlePostSketch(WiFiClient& client, String& req_str) {
   uint8_t flashbuffer[FLASH_PAGE_SIZE];
   uint32_t flashAddress = APP_START_ADDRESS;
 
-  flash.erase((void*)flashAddress, updateSize);
+  flash.erase((void *)flashAddress, updateSize);
 
   uint32_t numPages = ceil((float)updateSize / (float)FLASH_PAGE_SIZE);
   uint32_t lastPageBytes = updateSize % FLASH_PAGE_SIZE == 0
-    ? FLASH_PAGE_SIZE
-    : updateSize % FLASH_PAGE_SIZE;
+                               ? FLASH_PAGE_SIZE
+                               : updateSize % FLASH_PAGE_SIZE;
 
-  for (uint32_t i = 0; i < numPages; i++) {
+  for (uint32_t i = 0; i < numPages; i++)
+  {
     // fill the page buffer, reading one byte at a time.
     uint32_t bufferIndex = 0;
     uint32_t bytesToRead = i == numPages - 1 ? lastPageBytes : FLASH_PAGE_SIZE;
-    while(bufferIndex < bytesToRead){
-      while(!client.available()){;} // don't continue until we received new data
-      flashbuffer[bufferIndex]=client.read();
+    while (bufferIndex < bytesToRead)
+    {
+      while (!client.available())
+      {
+        ;
+      } // don't continue until we received new data
+      flashbuffer[bufferIndex] = client.read();
       bufferIndex++;
     }
 
     LOG.print("writing received data buffer to flash at 0x");
     LOG.println(String(flashAddress, HEX));
 
-    flash.write((void*)flashAddress, flashbuffer, sizeof(flashbuffer));
+    flash.write((void *)flashAddress, flashbuffer, sizeof(flashbuffer));
     flashAddress += sizeof(flashbuffer);
   }
 
   LOG.print("FLASH at 0x12000: 0x");
-  LOG.println(String(*(uint32_t*)0x12000, HEX));
+  LOG.println(String(*(uint32_t *)0x12000, HEX));
   LOG.print("FLASH at 0x12004: 0x");
-  LOG.println(String(*(uint32_t*)0x12004, HEX));
+  LOG.println(String(*(uint32_t *)0x12004, HEX));
   LOG.print("FLASH at 0x12008: 0x");
-  LOG.println(String(*(uint32_t*)0x12008, HEX));
+  LOG.println(String(*(uint32_t *)0x12008, HEX));
   LOG.print("FLASH at 0x1200c: 0x");
-  LOG.println(String(*(uint32_t*)0x1200c, HEX));
+  LOG.println(String(*(uint32_t *)0x1200c, HEX));
 
   return true;
 }
 
-void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
+void OTA::sendResponse(WiFiClient client, bool flashSuccess)
+{
   // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
   // and a content-type so the client knows what's coming, then a blank line:
   if (flashSuccess)
@@ -217,7 +246,8 @@ void OTA::sendResponse(WiFiClient client, bool flashSuccess) {
 
 // reset all configurations that have been made for the OTA module
 // gets called when successfully flashed
-void OTA::stopHardware(){
+void OTA::stopHardware()
+{
   LOG.end();
   WiFi.end();
   digitalWrite(LED_BUILTIN2, LOW);

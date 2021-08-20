@@ -25,12 +25,14 @@
 #ifndef _ARDUINO_BEAR_SSL_H_
 #define _ARDUINO_BEAR_SSL_H_
 
+#if defined __has_include
+#  if __has_include (<ArduinoBearSSLConfig.h>)
+#    include <ArduinoBearSSLConfig.h>
+#  endif
+#endif
+
 #include "BearSSLClient.h"
 #include "SHA1.h"
-#include "SHA256.h"
-#include "MD5.h"
-#include "AES128.h"
-#include "DES.h"
 
 class ArduinoBearSSLClass {
 public:

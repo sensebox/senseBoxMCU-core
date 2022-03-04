@@ -3,6 +3,8 @@
 Arduino library for dust Sensor SDS011 (Nova Fitness Co.,Ltd) which allows to choose the serial port used to communicate with the sensor.
 Based on the work of [ricky-z](https://github.com/ricki-z/SDS011)
 
+Tested with Arduino Mega 2560 and senseBox MCU.
+
 ## Usage
 
 * Define SDS object:

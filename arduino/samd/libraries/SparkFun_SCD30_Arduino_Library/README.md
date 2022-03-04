@@ -24,6 +24,7 @@ Thanks to!
 * [awatterott](https://github.com/awatterott) for adding [getAltitudeCompensation()](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library/pull/18)
 * [jogi-k](https://github.com/jogi-k) for adding [teensy i2clib](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library/pull/19) support
 * [paulvha](https://github.com/paulvha) for the suggestions and corrections in [his version of the library](https://github.com/paulvha/scd30)
+* [yamamaya](https://github.com/yamamaya) for the [3ms delay](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library/pull/24)
 
 Repository Contents
 -------------------
@@ -42,8 +43,6 @@ License Information
 -------------------
 
 This product is _**open source**_!
-
-Various bits of the code have different licenses applied. Anything SparkFun wrote is beerware; if you see me (or any other SparkFun employee) at the local, and you've found our code helpful, please buy us a round!
 
 Please use, reuse, and modify these files as you see fit. Please maintain attribution to SparkFun Electronics and release anything derivative under the same license.
 

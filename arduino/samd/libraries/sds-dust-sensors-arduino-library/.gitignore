@@ -1,0 +1,7 @@
+src/main.cpp
+src/src.ino
+platformio.ini
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json

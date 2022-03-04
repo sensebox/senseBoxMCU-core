@@ -10,7 +10,7 @@ jobs:
     name: Setup test matrix
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Extract all versions
         id: set-matrix
@@ -28,7 +28,7 @@ jobs:
         version: ${{ fromJson(needs.setup.outputs.matrix) }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@v1.1.1

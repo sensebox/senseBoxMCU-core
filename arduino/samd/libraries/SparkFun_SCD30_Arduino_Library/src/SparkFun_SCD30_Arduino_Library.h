@@ -40,10 +40,10 @@
 #include <Wire.h>
 #endif
 
-//The default I2C address for the SCD30 is 0x61.
+// The default I2C address for the SCD30 is 0x61.
 #define SCD30_ADDRESS 0x61
 
-//Available commands
+// Available commands
 
 #define COMMAND_CONTINUOUS_MEASUREMENT 0x0010
 #define COMMAND_SET_MEASUREMENT_INTERVAL 0x4600
@@ -70,38 +70,43 @@ public:
 
 	bool begin(bool autoCalibrate) { return begin(Wire, autoCalibrate); }
 #ifdef USE_TEENSY3_I2C_LIB
-	bool begin(i2c_t3 &wirePort = Wire, bool autoCalibrate = false, bool measBegin = true); //By default use Wire port
+	bool begin(i2c_t3 &wirePort = Wire, bool autoCalibrate = false, bool measBegin = true); // By default use Wire port
 #else
-	bool begin(TwoWire &wirePort = Wire, bool autoCalibrate = false, bool measBegin = true); //By default use Wire port
+	bool begin(TwoWire &wirePort = Wire, bool autoCalibrate = false, bool measBegin = true); // By default use Wire port
 #endif
 
-	void enableDebugging(Stream &debugPort = Serial); //Turn on debug printing. If user doesn't specify then Serial will be used.
+	bool isConnected();
+	void enableDebugging(Stream &debugPort = Serial); // Turn on debug printing. If user doesn't specify then Serial will be used.
 
 	bool beginMeasuring(uint16_t pressureOffset);
 	bool beginMeasuring(void);
 	bool StopMeasurement(void); // paulvha
 
-	// based on paulvha
-	bool getSettingValue(uint16_t registerAddress, uint16_t *val);
-	bool getForcedRecalibration(uint16_t *val) { return (getSettingValue(COMMAND_SET_FORCED_RECALIBRATION_FACTOR, val)); }
-	bool getMeasurementInterval(uint16_t *val) { return (getSettingValue(COMMAND_SET_MEASUREMENT_INTERVAL, val)); }
-	bool getTemperatureOffset(uint16_t *val) { return (getSettingValue(COMMAND_SET_TEMPERATURE_OFFSET, val)); }
-	bool getAltitudeCompensation(uint16_t *val) { return (getSettingValue(COMMAND_SET_ALTITUDE_COMPENSATION, val)); }
-	bool getFirmwareVersion(uint16_t *val) { return (getSettingValue(COMMAND_READ_FW_VER, val)); }
+	bool setAmbientPressure(uint16_t pressure_mbar);
 
+	bool getSettingValue(uint16_t registerAddress, uint16_t *val);
+	bool getFirmwareVersion(uint16_t *val) { return (getSettingValue(COMMAND_READ_FW_VER, val)); }
 	uint16_t getCO2(void);
 	float getHumidity(void);
 	float getTemperature(void);
-	float getTemperatureOffset(void);
-	uint16_t getAltitudeCompensation(void);
 
+	uint16_t getMeasurementInterval(void);
+	bool getMeasurementInterval(uint16_t *val) { return (getSettingValue(COMMAND_SET_MEASUREMENT_INTERVAL, val)); }
 	bool setMeasurementInterval(uint16_t interval);
-	bool setAmbientPressure(uint16_t pressure_mbar);
+
+	uint16_t getAltitudeCompensation(void);
+	bool getAltitudeCompensation(uint16_t *val) { return (getSettingValue(COMMAND_SET_ALTITUDE_COMPENSATION, val)); }
 	bool setAltitudeCompensation(uint16_t altitude);
-	bool setAutoSelfCalibration(bool enable);
-	bool setForcedRecalibrationFactor(uint16_t concentration);
-	bool setTemperatureOffset(float tempOffset);
+
 	bool getAutoSelfCalibration(void);
+	bool setAutoSelfCalibration(bool enable);
+
+	bool getForcedRecalibration(uint16_t *val) { return (getSettingValue(COMMAND_SET_FORCED_RECALIBRATION_FACTOR, val)); }
+	bool setForcedRecalibrationFactor(uint16_t concentration);
+
+	float getTemperatureOffset(void);
+	bool getTemperatureOffset(uint16_t *val) { return (getSettingValue(COMMAND_SET_TEMPERATURE_OFFSET, val)); }
+	bool setTemperatureOffset(float tempOffset);
 
 	bool dataAvailable();
 	bool readMeasurement();
@@ -116,25 +121,25 @@ public:
 	uint8_t computeCRC8(uint8_t data[], uint8_t len);
 
 private:
-	//Variables
+	// Variables
 #ifdef USE_TEENSY3_I2C_LIB
-	i2c_t3 *_i2cPort; //The generic connection to user's chosen I2C hardware
+	i2c_t3 *_i2cPort; // The generic connection to user's chosen I2C hardware
 #else
-	TwoWire *_i2cPort;																		 //The generic connection to user's chosen I2C hardware
+	TwoWire *_i2cPort;																		 // The generic connection to user's chosen I2C hardware
 #endif
-	//Global main datums
+	// Global main datums
 	float co2 = 0;
 	float temperature = 0;
 	float humidity = 0;
 
-	//These track the staleness of the current data
-	//This allows us to avoid calling readMeasurement() every time individual datums are requested
+	// These track the staleness of the current data
+	// This allows us to avoid calling readMeasurement() every time individual datums are requested
 	bool co2HasBeenReported = true;
 	bool humidityHasBeenReported = true;
 	bool temperatureHasBeenReported = true;
 
-	//Debug
-	Stream *_debugPort;			 //The stream to send debug messages to if enabled. Usually Serial.
-	boolean _printDebug = false; //Flag to print debugging variables
+	// Debug
+	Stream *_debugPort;			 // The stream to send debug messages to if enabled. Usually Serial.
+	boolean _printDebug = false; // Flag to print debugging variables
 };
 #endif

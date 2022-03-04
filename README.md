@@ -13,14 +13,12 @@ senseBox MCU is a Microchip SAMD21 based open-source board for sensors.
 - MicroUSB connector for power and data
 - Idle power consumption about 20mA (single 5V power supply)
 - Open-Source
-- **[Documentation on learn.watterott.com](http://learn.watterott.com/sensebox/)**
 - This repository is based on [Watterott's Core Package](https://github.com/watterott/senseBox-MCU)
 
 ## Library Versions
 
 The senseBox MCU Core V.1.6.0 includes the following libraries:
 
-- [Arduino WiFi101 (WINC1500)](https://github.com/arduino-libraries/WiFi101)
 - [SSD1306_PLOT_LIBRARY](https://github.com/sensebox/SSD1306-Plot-Library/archive/refs/tags/v1.0.0.zip)
 - [SDS011_LIBRARY](https://github.com/sensebox/SDS011-select-serial/archive/refs/heads/master.zip)
 - [RTC_LIBRARY](https://github.com/sensebox/RV8523-RTC-Arduino-Library/archive/refs/heads/main.zip)
@@ -29,8 +27,10 @@ The senseBox MCU Core V.1.6.0 includes the following libraries:
 - [VEML6070](https://github.com/sensebox/VEML6070-UV-Arduino-Library/archive/refs/heads/main.zip)
 - [SENSEBOX_LIBWEB](https://github.com/sensebox/sensebox-libweb/archive/refs/heads/master.zip)
 
+- [Arduino WiFi101 (WINC1500)](https://github.com/arduino-libraries/WiFi101)
 - [Ethernet](https://github.com/arduino-libraries/Ethernet)
 - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
+- [Adafruit Sensor Library](https://github.com/adafruit/Adafruit_Sensor)
 - [Adafruit HDC1000 Library](https://github.com/adafruit/Adafruit_HDC1000_Library)
 - [Adafruit BME280 Library](https://github.com/adafruit/Adafruit_BME280_Library)
 - [Adafruit BMP280 Library](https://github.com/adafruit/Adafruit_BMP280_Library)

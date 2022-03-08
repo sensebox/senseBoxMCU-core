@@ -5,12 +5,9 @@ updates:
     schedule:
       interval: "daily"
     assignees:
-      - "ubergesundheit"
       - "mariopesch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "ubergesundheit"

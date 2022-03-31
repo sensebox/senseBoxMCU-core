@@ -19,7 +19,7 @@
   "homepage": "https://github.com/sensebox/senseBoxMCU-core#readme",
   "dependencies": {},
   "devDependencies": {
-    "@sensebox/sketch-templater": "^1.10.5"
+    "@sensebox/sketch-templater": "^1.12.1"
   },
   "peerDependencies": {
     "@sensebox/opensensemap-api-models": "^0.0.28"

@@ -73,6 +73,8 @@ On this WiFi accesspoint clients can send new sketches to the MCU via HTTP POST 
 - no checksumming or signature check on the received binary
 - OTA bootloader takes up almost 64KB of flash - most of it is the Wifi101 library.
     If this can be replaced  with a slimmer library, more space for user sketches will remain.
+- OTA_DEBUG logging is silent after ~2 seconds without communication - cause unknown.
+    Output is re-enabled by sending a message from the host.
 
 ## license
 GPL-3.0, Norwin Roosen

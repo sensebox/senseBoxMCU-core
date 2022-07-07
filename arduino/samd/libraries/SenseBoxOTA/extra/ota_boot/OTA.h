@@ -9,7 +9,7 @@
 #endif
 
 // uncomment this for OTA debug statements. note: nothing will execute until serial monitor is opened!
-#define OTA_DEBUG
+//#define OTA_DEBUG
 #define LOG SerialUSB
 
 // these values must correspond  to the linker script flash_with_ota.ld

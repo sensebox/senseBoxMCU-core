@@ -16,4 +16,4 @@ buildBootSketch() {
 }
 
 mkdir -p "$OUTPUT_PATH"
-buildBootSketch "sensebox:samd:sb:power=on" "$OUTPUT_PATH/sensebox_mcu.h"
+buildBootSketch "sensebox:samd:sb:power=off" "$OUTPUT_PATH/sensebox_mcu.h"

@@ -1,5 +1,7 @@
 #include "OTA.h"
 
+#include <senseBoxIO.h>
+
 #include <SPI.h>
 #include <Arduino.h>
 #include <FlashStorage.h>
@@ -23,6 +25,7 @@ void OTA::update()
 
 void OTA::createAccessPoint()
 {
+  senseBoxIO.powerXB1(true);
   if (WiFi.status() == WL_NO_SHIELD)
   {
     Serial.println("WiFi shield not present");
@@ -253,4 +256,5 @@ void OTA::stopHardware()
   LOG.end();
   WiFi.end();
   digitalWrite(LED_BUILTIN2, LOW);
+  senseBoxIO.powerXB1(false);
 }

@@ -35,7 +35,6 @@ private:
     bool handlePostSketch(WiFiClient &client, String &req_str);
     void stopHardware();
 
-    byte mac[6];
     int status;
     WiFiServer server; // Server on Port 80
 

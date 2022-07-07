@@ -29,13 +29,11 @@ void OTA::createAccessPoint()
     while (true)
       ;
   }
-  // Assign mac address to byte array & push it to a char array
-  WiFi.macAddress(mac);
-  String mac_str = String(mac[1], HEX) + String(mac[0], HEX);
-  mac_str.toUpperCase();
-  String ssid_string = String("senseBox:" + mac_str);
+  // get wifi mac address and use last bytes to generate the wifi SSID
   char ssid[20];
-  ssid_string.toCharArray(ssid, 20);
+  byte mac[6];
+  WiFi.macAddress(mac);
+  sprintf(ssid, "senseBox:%.2X%.2X", mac[1], mac[0]);
 
   LOG.print("Creating access point named: ");
   LOG.println(ssid);

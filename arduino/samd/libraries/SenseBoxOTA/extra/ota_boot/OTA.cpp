@@ -103,6 +103,7 @@ void OTA::pollWebserver()
   bool flashSuccess = false;
   bool currentLineIsBlank = true;
   String req_str = "";
+  req_str.reserve(256);
 
   while (client.connected())
   {
@@ -184,7 +185,6 @@ bool OTA::handlePostSketch(WiFiClient &client, String &req_str)
       continue;
     contentLength--;
     char c = client.read();
-    req_str += c;
   }
 
   // write the body to flash, page by page

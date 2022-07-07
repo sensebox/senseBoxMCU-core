@@ -67,6 +67,8 @@ void OTA::pollWifiState()
       // a device has disconnected from the AP, and we are back in listening mode
       LOG.println("Device disconnected from AP");
       led_interval = 2000;
+      // needed according to https://github.com/arduino-libraries/WiFi101/issues/110#issuecomment-256662397
+      server.begin();
     }
   }
 
@@ -86,7 +88,9 @@ void OTA::pollWifiState()
 
 void OTA::pollWebserver()
 {
-  // listen for incoming clients
+  // listen for one (!) incoming client. having more than one client
+  // connected is not intended, as they may interfere, posting
+  // different sketches.
   WiFiClient client = server.available();
   if (!client)
     return;

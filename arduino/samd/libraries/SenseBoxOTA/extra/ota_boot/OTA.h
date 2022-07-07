@@ -35,7 +35,7 @@ private:
     bool handlePostSketch(WiFiClient &client, String &req_str);
     void stopHardware();
 
-    int status;
+    uint8_t status;
     WiFiServer server; // Server on Port 80
 
     // LED state handling

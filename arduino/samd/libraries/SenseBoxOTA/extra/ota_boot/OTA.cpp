@@ -56,16 +56,17 @@ void OTA::createAccessPoint()
 void OTA::pollWifiState()
 {
   // blink faster if a device is connected to the access point
-  if (status != WiFi.status())
+  uint8_t newStatus = WiFi.status();
+  if (status != newStatus)
   {
     status = WiFi.status();
 
     if (status == WL_AP_CONNECTED)
     {
       LOG.println("device connected to AP");
-      led_interval = 900;
+      led_interval = 700;
     }
-    else
+    else if (status == WL_AP_LISTENING)
     {
       // a device has disconnected from the AP, and we are back in listening mode
       LOG.println("Device disconnected from AP");

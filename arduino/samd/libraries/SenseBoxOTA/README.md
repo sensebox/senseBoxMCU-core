@@ -60,11 +60,11 @@ On this WiFi accesspoint clients can send new sketches to the MCU via HTTP POST 
   - `src/` contains the runtime with the compiled bootloader, included by users via `#include <SenseBoxOTA.h>`
 
 - To apply changes made to the `ota_boot.ino` sketch, the OTA bootloader needs to be built:
-    Run `./build.sh` to update the bootloader that users include via `#include <SenseBoxOTA.h>`.
+    Run `./build_cli.sh` to update the bootloader that users include via `#include <SenseBoxOTA.h>`.
 
 - This library has development dependencies on [`WiFi101.h` 0.16.*][libwifi] and [`FlashStorage.h` v1.0.0][libflash] (during build time only).
 
-- The recommended build tool is [arduino-cli][cli], but Arduino IDE may work too. `build.sh` will check for availability of both tools`.
+- The recommended build tool is [arduino-cli][cli], but Arduino IDE may work too, use the respective `build_*.sh` script.
 
 - For development you can enable DEBUG logging via the `OTA_DEBUG` define in `OTA.h`;
     note that in debug mode the bootloader will wait until the Serial Monitor is opened before starting operation!

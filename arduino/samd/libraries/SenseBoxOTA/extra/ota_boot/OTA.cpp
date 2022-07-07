@@ -166,11 +166,11 @@ bool OTA::handlePostSketch(WiFiClient &client, String &req_str)
   uint32_t contentLength = tmp.toInt();
   LOG.println(contentLength);
 
-  // if (contentLength <= OTA_SIZE) {
-  //   LOG.println("update is too small, ignoring");
-  //   return false;
-  // }
-  if (contentLength > (FLASH_SIZE - 0x2000))
+  if (contentLength < OTA_SIZE) {
+    LOG.println("update is too small, ignoring");
+    return false;
+  }
+  if (contentLength > (FLASH_SIZE - OTA_START))
   {
     LOG.println("update is too large, ignoring");
     return false;

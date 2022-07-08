@@ -8,8 +8,10 @@
 #include "WProgram.h"
 #endif
 
+#include <Adafruit_SSD1306.h>
+
 // uncomment this for OTA debug statements. note: nothing will execute until serial monitor is opened!
-//#define OTA_DEBUG
+// #define OTA_DEBUG
 #define LOG SerialUSB
 
 // these values must correspond  to the linker script flash_with_ota.ld
@@ -42,4 +44,8 @@ private:
     unsigned long previousMillis = 0;
     int led_interval = 2000;
     int ledState = LOW;
+
+    // oled display
+    Adafruit_SSD1306 display;
+    bool displayEnabled;
 };

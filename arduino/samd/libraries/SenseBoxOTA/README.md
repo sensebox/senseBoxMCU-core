@@ -62,7 +62,7 @@ On this WiFi accesspoint clients can send new sketches to the MCU via HTTP POST 
 - To apply changes made to the `ota_boot.ino` sketch, the OTA bootloader needs to be built:
     Run `./build_cli.sh` to update the bootloader that users include via `#include <SenseBoxOTA.h>`.
 
-- This library has development dependencies on [`WiFi101.h` 0.16.*][libwifi] and [`FlashStorage.h` v1.0.0][libflash] (during build time only).
+- This library has build-time dependencies on `sh`, `xxd`, and some arduino libraries that are not vendored. Check the file [`src/boot/buildinfo.txt`](src/boot/buildinfo.txt) for information on the library versions used during the last build.
 
 - The recommended build tool is [arduino-cli][cli], but Arduino IDE may work too, use the respective `build_*.sh` script.
 

@@ -10,7 +10,7 @@ OUTPUT_PATH="$DIR/../../src/boot"
 buildBootSketch() {
 	BOARD=$1
 	DESTINATION=$2
-	"$ARDUINO" compile --fqbn="$BOARD" --build-path="$BUILD_PATH" "$DIR/$SKETCH_NAME"
+	"$ARDUINO" compile --fqbn="$BOARD" --build-path="$BUILD_PATH" --no-color "$DIR/$SKETCH_NAME" > $OUTPUT_PATH/buildinfo.txt
 	xxd -i < "$BUILD_PATH/$SKETCH_NAME.bin" > $DESTINATION
 	rm -rf "$BUILD_PATH"
 }

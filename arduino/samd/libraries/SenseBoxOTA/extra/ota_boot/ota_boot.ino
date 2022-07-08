@@ -58,7 +58,6 @@ void setup() {
   }
 
   // Setup WiFi access point
-  delay(400); // otherwise the whole app hangs..
   ota_module.begin(true);
 }
 

@@ -1,0 +1,17 @@
+Sketch uses 63012 bytes (24%) of program storage space. Maximum is 262144 bytes.
+Global variables use 7516 bytes of dynamic memory.
+
+Used library         Version Path                                                                         
+WiFi101              0.16.1  /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/WiFi101             
+Adafruit_SSD1306     2.5.1   /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/Adafruit_SSD1306    
+Adafruit-GFX-Library 1.10.13 /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/Adafruit-GFX-Library
+SPI                  1.0     /home/norwin/.arduino15/packages/arduino/hardware/samd/1.8.13/libraries/SPI  
+Wire                 1.0     /home/norwin/.arduino15/packages/arduino/hardware/samd/1.8.13/libraries/Wire 
+senseBoxIO           1.0.0   /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/senseBoxIO          
+FlashStorage         1.0.0   /home/norwin/Arduino/libraries/FlashStorage                                  
+Adafruit_BusIO       1.11.2  /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/Adafruit_BusIO      
+
+Used platform Version Path                                                         
+sensebox:samd 1.0.0   /home/norwin/.arduino15/packages/sensebox/hardware/samd      
+arduino:samd  1.8.13  /home/norwin/.arduino15/packages/arduino/hardware/samd/1.8.13
+

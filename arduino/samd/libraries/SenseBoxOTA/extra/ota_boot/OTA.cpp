@@ -135,6 +135,7 @@ void OTA::pollWebserver()
   }
 
   sendResponse(client, req_str.startsWith("GET") || flashSuccess);
+  delay(50); // give client time to receive response & disconnect
   client.stop();
   LOG.println("client disconnected");
 

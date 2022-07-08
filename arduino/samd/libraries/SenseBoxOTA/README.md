@@ -2,7 +2,7 @@
 This library provides over the air programming for the senseBox MCU.
 
 ## usage
-To enable this operating mode, just include the following line in your sketch:
+To enable OTA programming, just include the following line in your sketch:
 
 ```c
 #include <SenseBoxOTA.h>
@@ -17,25 +17,30 @@ Your MCU will now have a secondary OTA bootloader, which enables a secondary ope
 - This mode can be entered manually by holding down the grey button on the MCU ("switch") while starting / resetting.
 
 ### uploading a sketch
-To upload a sketch, make sure...
-- the MCU is in OTA mode & you are connected to its WiFi AP,
-- your sketch contains the line `#include <SenseBoxOTA.h>`.
-
-Export your compiled sketch (`ctrl+alt+s`). Now you can upload from your sketch directory:
-
-```
-curl 192.168.1.1/sketch --data-binary @<your-sketchname>ino.sensebox_mcu.bin
-```
-
-Other known-working clients:
-- [senseBox Blockly app](https://github.com/sensebox/blockly-app)
+1. Prerequisites:
+    - your sketch contains the line `#include <SenseBoxOTA.h>`.
+    - your senseBox MCU already has the OTA bootloader installed
+    - your senseBox MCU has the WiFi bee installed in slot XBee1
+2. Enable OTA mode:
+    - on the hold the SWITCH, press RESET, and release SWITCH after 2 seconds
+    - if in OTA mode, the green status led blinks slowly
+3. connect to the WiFi network named `senseBox:ABCD` with your device,
+   where `ABCD` are the last bytes of the mac address printed on the WiFi bee
+3. Upload:
+    - [Using senseBox Connect app](https://sensebox.de/en/app.html)
+    - Using Arduino IDE & `curl`:
+      Export your compiled sketch (`ctrl+alt+s`).
+      Now you can upload from your sketch directory:
+      ```
+      curl 192.168.1.1/sketch --data-binary @<your-sketchname>ino.sensebox_mcu.bin
+      ```
 
 ## how it works
 
 This library provides a second stage ('userspace') bootloader, that runs after the first stage bootloader (which provides the USB mass-storage update facility), but runs before the user-provided code.
 This works by inserting the OTA functionality at the start of the userspace.
 This position in flash storage is defined for the symbol name `.sketch_boot` in the linker script (`variants/sensebox_mcu/linker_scripts/gcc/flash_with_bootloader.ld`).
-The symbol `.sketch_boot` is defined in `src/SenseboxOTA.cpp` and contains the compiled sketch of the bootloader (see section [development].
+The symbol `.sketch_boot` is defined in `src/SenseboxOTA.cpp` and contains the compiled sketch of the bootloader.
 
 Internally, this bootloader works quite similar as Arduino's [`SDU` library][sdu], except for swapping the SD reading functionality with a webserver:
 The OTA bootloader directly hands over to a user application if one is present, otherwise starts a WiFi accesspoint and webserver.
@@ -52,6 +57,16 @@ On this WiFi accesspoint clients can send new sketches to the MCU via HTTP POST 
 |                           |
 +---------------------------+
 ```
+
+## HTTP API
+On the access point, a HTTP1.1 server at `192.168.1.1:80` accepts the following requests:
+
+### `POST /sketch`
+- headers:
+  - `Content-Type`: required. length of the sketch in bytes
+- body: raw binary data (not encoded as anything) of a compiled sketch that must contain the `#include <SenseBoxOTA.h>` bit
+  - with curl, just use `-d @<path-to-sketch.bin>`
+  - in JS, you can use `fetch()` with an `ArrayBuffer()` as body.
 
 ## development
 - directory layout:

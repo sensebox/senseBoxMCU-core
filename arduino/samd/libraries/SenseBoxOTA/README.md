@@ -1,6 +1,8 @@
 # senseBox OTA
 This library provides over the air programming for the senseBox MCU.
-To enable this operating mode, just include the following line in your sketch:
+
+## usage
+To enable OTA programming, just include the following line in your sketch:
 
 ```c
 #include <SenseBoxOTA.h>
@@ -14,35 +16,85 @@ Your MCU will now have a secondary OTA bootloader, which enables a secondary ope
     In this mode a WiFi hotspot with a webserver is started, where sketch binaries can be sent to.
 - This mode can be entered manually by holding down the grey button on the MCU ("switch") while starting / resetting.
 
-## uploading a sketch
-To upload a sketch, make sure...
-- the MCU is in OTA mode & you are connected to its WiFi AP,
-- your sketch contains the line `#include <SenseBoxOTA.h>`.
+### uploading a sketch
+1. Prerequisites:
+    - your sketch contains the line `#include <SenseBoxOTA.h>`.
+    - your senseBox MCU already has the OTA bootloader installed
+    - your senseBox MCU has the WiFi bee installed in slot XBee1
+2. Enable OTA mode:
+    - on the hold the SWITCH, press RESET, and release SWITCH after 2 seconds
+    - if in OTA mode, the green status led blinks slowly
+3. connect to the WiFi network named `senseBox:ABCD` with your device,
+   where `ABCD` are the last bytes of the mac address printed on the WiFi bee
+3. Upload:
+    - [Using senseBox Connect app](https://sensebox.de/en/app.html)
+    - Using Arduino IDE & `curl`:
+      Export your compiled sketch (`ctrl+alt+s`).
+      Now you can upload from your sketch directory:
+      ```
+      curl 192.168.1.1/sketch --data-binary @<your-sketchname>ino.sensebox_mcu.bin
+      ```
 
-Export your compiled sketch (`ctrl+alt+s`). Now you can upload from your sketch directory:
+## how it works
+
+This library provides a second stage ('userspace') bootloader, that runs after the first stage bootloader (which provides the USB mass-storage update facility), but runs before the user-provided code.
+This works by inserting the OTA functionality at the start of the userspace.
+This position in flash storage is defined for the symbol name `.sketch_boot` in the linker script (`variants/sensebox_mcu/linker_scripts/gcc/flash_with_bootloader.ld`).
+The symbol `.sketch_boot` is defined in `src/SenseboxOTA.cpp` and contains the compiled sketch of the bootloader.
+
+Internally, this bootloader works quite similar as Arduino's [`SDU` library][sdu], except for swapping the SD reading functionality with a webserver:
+The OTA bootloader directly hands over to a user application if one is present, otherwise starts a WiFi accesspoint and webserver.
+On this WiFi accesspoint clients can send new sketches to the MCU via HTTP POST to http://192.168.1.1:80/sketch.
 
 ```
-curl 192.168.1.1/sketch --data-binary @<your-sketchname>ino.sensebox_mcu.bin
++---------------------------+
+|   8KB  primary bootloader |
++---------------------------+
+|  64KB  OTA bootloader     | // this section only exists, when .sketch_boot is defined,
+|        .sketch_boot       | // i.e. when the user sketch contains `#include <SenseBoxOTA.h>` 
++---------------------------+
+| 184KB  userspace code     |
+|                           |
++---------------------------+
 ```
+
+## HTTP API
+On the access point, a HTTP1.1 server at `192.168.1.1:80` accepts the following requests:
+
+### `POST /sketch`
+- headers:
+  - `Content-Type`: required. length of the sketch in bytes
+- body: raw binary data (not encoded as anything) of a compiled sketch that must contain the `#include <SenseBoxOTA.h>` bit
+  - with curl, just use `-d @<path-to-sketch.bin>`
+  - in JS, you can use `fetch()` with an `ArrayBuffer()` as body.
 
 ## development
-This library has development dependencies on `WiFi101.h` and `FlashStorage.h` (during build time only).
+- directory layout:
+  - `examples/`: simple usage example
+  - `extra/ota_boot/`: the bootloader
+  - `src/` contains the runtime with the compiled bootloader, included by users via `#include <SenseBoxOTA.h>`
 
-To apply changes made to the `ota_boot.ino` sketch, the `./build.sh` script has to be run first.
-For development you can enable DEBUG logging via the `OTA_DEBUG` define in `conf.h`; note that in debug mode the bootloader will wait until the Serial Monitor is opened before starting operation.
+- To apply changes made to the `ota_boot.ino` sketch, the OTA bootloader needs to be built:
+    Run `./build_cli.sh` to update the bootloader that users include via `#include <SenseBoxOTA.h>`.
 
-Internally, it works quite similar as Arduino's `SDU.h` library, except for swapping the SD reading functionality with a webserver.
-To understand what is happening the following hints may help:
+- This library has build-time dependencies on `sh`, `xxd`, and some arduino libraries that are not vendored. Check the file [`src/boot/buildinfo.txt`](src/boot/buildinfo.txt) for information on the library versions used during the last build.
 
-- The linker script reserves the first section of flash storage for the OTA functionality via the symbol name `.sketch_boot`.
-  If this symbol is missing, the memory is as usual (8KB bootloader, then user code).
-- The OTA functionality is defined in the code in `extras/ota_boot`, and put into the folder `src/boot/` in compiled binary form.
-- The OTA bootloader directly hands over to a user application if one is present, otherwise starts a hotspot and webserver.
+- The recommended build tool is [arduino-cli][cli], but Arduino IDE may work too, use the respective `build_*.sh` script.
+
+- For development you can enable DEBUG logging via the `OTA_DEBUG` define in `OTA.h`;
+    note that in debug mode the bootloader will wait until the Serial Monitor is opened before starting operation!
 
 ## known issues
-- accepts only one wifi client
-- webserver does not respond after one wifi disconnect
-- no code checksumming
+- no checksumming or signature check on the received binary
+- OTA bootloader takes up almost 64KB of flash - most of it is the Wifi101 library.
+    If this can be replaced  with a slimmer library, more space for user sketches will remain.
+- OTA_DEBUG logging is silent after ~2 seconds without communication - cause unknown.
+    Output is re-enabled by sending a message from the host.
 
 ## license
 GPL-3.0, Norwin Roosen
+
+[sdu]: https://github.com/arduino/ArduinoCore-samd/tree/master/libraries/SDU
+[cli]: https://github.com/arduino/arduino-cli
+[libwifi]: https://github.com/arduino-libraries/WiFi101
+[libflash]: https://github.com/cmaglie/FlashStorage

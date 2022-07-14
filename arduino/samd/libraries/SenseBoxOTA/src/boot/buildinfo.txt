@@ -1,0 +1,13 @@
+Sketch uses 52772 bytes (20%) of program storage space. Maximum is 262144 bytes.
+Global variables use 6260 bytes of dynamic memory.
+
+Used library Version Path                                                                       
+WiFi101      0.16.1  /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/WiFi101           
+senseBoxIO   1.0.0   /home/norwin/src/senseBoxMCU-core/arduino/samd/libraries/senseBoxIO        
+SPI          1.0     /home/norwin/.arduino15/packages/arduino/hardware/samd/1.8.13/libraries/SPI
+FlashStorage 1.0.0   /home/norwin/Arduino/libraries/FlashStorage                                
+
+Used platform Version Path                                                         
+sensebox:samd 1.0.0   /home/norwin/.arduino15/packages/sensebox/hardware/samd      
+arduino:samd  1.8.13  /home/norwin/.arduino15/packages/arduino/hardware/samd/1.8.13
+

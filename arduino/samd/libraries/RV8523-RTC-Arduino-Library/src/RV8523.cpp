@@ -140,7 +140,7 @@ void RV8523::batterySwitchOver(int on) //activate/deactivate battery switch over
     Wire.write(byte(0x02)); //control 3
     if(on)
     {
-      Wire.write(val & ~0xE0); //battery switchover in standard mode
+      Wire.write(val & 0b00111111); //battery switchover in direct mode
     }
     else
     {

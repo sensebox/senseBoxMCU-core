@@ -1,0 +1,6 @@
+{
+    "configuration": "power=on",
+    "board": "sensebox:samd:sb",
+    "sketch": "example/example.ino",
+    "port": "/dev/ttyACM0"
+}

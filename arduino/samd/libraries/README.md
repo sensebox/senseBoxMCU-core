@@ -41,3 +41,5 @@ These third-party libraries are directly integrated
 - [TheThingsNetwork](https://github.com/TheThingsNetwork/arduino-device-lib)
 - [NTPClient](https://github.com/arduino-libraries/NTPClient)
 - [phyphox BLE](https://github.com/phyphox/phyphox-arduino)
+- [RG15-Arduino](https://github.com/sensebox/rg15-arduino-lib)
+- [SolarChargerSB041](https://github.com/sensebox/SolarChargerSB041)

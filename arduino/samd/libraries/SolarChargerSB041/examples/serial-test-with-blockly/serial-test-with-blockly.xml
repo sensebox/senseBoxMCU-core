@@ -1,0 +1,119 @@
+<xml xmlns="https://developers.google.com/blockly/xml" board="mcu">
+  <block type="arduino_functions" id="QWW|$jB8+*EL;}|#uA" deletable="false" x="57" y="93">
+    <data>mcu</data>
+    <statement name="SETUP_FUNC">
+      <block type="init_serial_monitor" id="nEsHJKo+=*Mg,cc=q/FJ">
+        <field name="SERIAL_ID">SerialUSB</field>
+        <field name="SPEED">9600</field>
+      </block>
+    </statement>
+    <statement name="LOOP_FUNC">
+      <block type="print_serial_monitor" id=",`jaH4;5(YijV927u^I)">
+        <field name="SERIAL_ID">SerialUSB</field>
+        <field name="NEW_LINE">TRUE</field>
+        <value name="CONTENT">
+          <block type="sensebox_solar_charger_SB041" id="Je+3@%}!AZ}^1|Znl~gE">
+            <field name="MEASUREMENT">isChargerConnected</field>
+          </block>
+        </value>
+        <next>
+          <block type="print_serial_monitor" id="%Y0SXpaiCtVlO`cV=HPl">
+            <field name="SERIAL_ID">SerialUSB</field>
+            <field name="NEW_LINE">TRUE</field>
+            <value name="CONTENT">
+              <block type="sensebox_solar_charger_SB041" id=";aEDSG{h0B))vvDi1`~=">
+                <field name="MEASUREMENT">getSolarPanelVoltage</field>
+              </block>
+            </value>
+            <next>
+              <block type="print_serial_monitor" id="aq,-(Pg:BR=!/VV3goWv">
+                <field name="SERIAL_ID">SerialUSB</field>
+                <field name="NEW_LINE">TRUE</field>
+                <value name="CONTENT">
+                  <block type="sensebox_solar_charger_SB041" id="8?yR6%Q1G(54=k0QRTCm">
+                    <field name="MEASUREMENT">getBatteryVoltage</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="print_serial_monitor" id="s3[km^j3gJz;$j/K#nB]">
+                    <field name="SERIAL_ID">SerialUSB</field>
+                    <field name="NEW_LINE">TRUE</field>
+                    <value name="CONTENT">
+                      <block type="sensebox_solar_charger_SB041" id="9ngshxkaUwCDxKWWw6Z+">
+                        <field name="MEASUREMENT">isCharging</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="print_serial_monitor" id=";.,o+3n:l/?e9#6d+hyu">
+                        <field name="SERIAL_ID">SerialUSB</field>
+                        <field name="NEW_LINE">TRUE</field>
+                        <value name="CONTENT">
+                          <block type="sensebox_solar_charger_SB041" id="yttMb/{7e*[18Cj!!NP}">
+                            <field name="MEASUREMENT">isFastCharging</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="print_serial_monitor" id="`:t7SQK?zt!u.KeOP(FL">
+                            <field name="SERIAL_ID">SerialUSB</field>
+                            <field name="NEW_LINE">TRUE</field>
+                            <value name="CONTENT">
+                              <block type="sensebox_solar_charger_SB041" id=")}tt[W*BQpLubb6_gkeF">
+                                <field name="MEASUREMENT">getBatteryLevel</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="print_serial_monitor" id="z=FLu-4x2dK(SKpoA5-:">
+                                <field name="SERIAL_ID">SerialUSB</field>
+                                <field name="NEW_LINE">TRUE</field>
+                                <value name="CONTENT">
+                                  <block type="sensebox_solar_charger_SB041" id="vHOf]NwRb:tq#aY#aq+3">
+                                    <field name="MEASUREMENT">isGoodInputVoltage</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="print_serial_monitor" id="L=I+stWnjpEUG)CXGvAA">
+                                    <field name="SERIAL_ID">SerialUSB</field>
+                                    <field name="NEW_LINE">TRUE</field>
+                                    <value name="CONTENT">
+                                      <block type="sensebox_solar_charger_SB041" id="z`-jzmA:RQHEdFO@=Y4h">
+                                        <field name="MEASUREMENT">isBatteryPresent</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="print_serial_monitor" id="mAP+k}yh^-E50Y4rm.I`">
+                                        <field name="SERIAL_ID">SerialUSB</field>
+                                        <field name="NEW_LINE">TRUE</field>
+                                        <value name="CONTENT">
+                                          <block type="sensebox_solar_charger_SB041" id="[Pg8nO,LZf1xb#5@}jUA">
+                                            <field name="MEASUREMENT">getBatteryTemperature</field>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="time_delay" id="3SO2|~do5uzp+1Dsc?RI">
+                                            <value name="DELAY_TIME_MILI">
+                                              <block type="math_number" id="e}clfG`QACY.BeMeubbv">
+                                                <field name="NUM">1000</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

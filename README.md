@@ -45,6 +45,7 @@ The senseBox MCU Core V.1.6.0 includes the following libraries:
 - [DallasTemperature](https://github.com/milesburton/Arduino-Temperature-Control-Library)
 - [ArduinoBearSSL](https://github.com/arduino-libraries/ArduinoBearSSL)
 - [ArduinoECCX08](https://github.com/arduino-libraries/ArduinoECCX08)
+- [Legacy Sensirion SPS30](https://github.com/Sensirion/arduino-avr-legacy-i2c-sps30/releases/tag/v1.1.2)
 - [SparkFun SCD30 Arduino Library](https://github.com/sparkfun/SparkFun_SCD30_Arduino_Library)
 - [SparkFun u-blox GNSS Arduino Library](https://github.com/sparkfun/SparkFun_u-blox_GNSS_Arduino_Library)
 - [NewPing](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home)
